@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Details</title>
+</head>
+<body>
+
+    <h1>Order #{{ order[0] }}</h1>
+
+    <p>
+        <strong>Status:</strong>
+        {{ order[2] }}
+    </p>
+
+    <p>
+        <strong>Date:</strong>
+        {{ order[3] }}
+    </p>
+
+    <h2>Books</h2>
+
+    {% for item in items %}
+
+        <h3>{{ item[0] }}</h3>
+
+        <p>
+            <strong>Author:</strong>
+            {{ item[1] }}
+        </p>
+
+        <p>
+            <strong>Price:</strong>
+            ₦{{ item[2] }}
+        </p>
+        <p>
+            <strong>Quantity:</strong>
+            {{ item[3] }}
+        </p>
+
+    {% endfor %}
+
+    <h2>Total: ₦{{ order[1] }}</h2>
+    {% if order[2] == "Pending" %}
+
+        <form method="POST" action="{{ url_for('pay_order', order_id=order[0]) }}">
+
+            <button type="submit">Pay Now</button>
+
+        </form>
+
+    {% endif %}
+
+</body>
+</html>

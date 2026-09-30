@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ebook Shop</title>
+</head>
+<body>
+
+    <h1>Ebook Shop</h1>
+
+    <h2>Categories</h2>
+
+    <ul>
+        {% for category in categories %}
+            <li>{{ category[0] }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Books</h2>
+
+    {% for book in books %}
+        <li>
+            <a href="{{ url_for('book_details', book_id=book[0]) }}">
+                {{ book[1] }}
+            </a>
+            - {{ book[2] }} - {{ book[4] }} - ₦{{ book[3] }}
+        </li>
+    {% endfor %}
+
+</body>
+</html>
+

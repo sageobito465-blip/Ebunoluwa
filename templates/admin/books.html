@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Ebooks</title>
+</head>
+<body>
+
+    <h1>Manage Ebooks</h1>
+
+    <h2>Upload Ebook</h2>
+
+    <a href="{{ url_for('add_book') }}">
+        Add New Ebook
+    </a>
+
+    <h2>Existing Ebooks</h2>
+
+    {% if books %}
+
+        {% for book in books %}
+
+            <h3>{{ book[1] }}</h3>
+
+            <p>
+                <strong>Author:</strong>
+                {{ book[2] }}
+            </p>
+
+            <p>
+                <strong>Category:</strong>
+                {{ book[5] }}
+            </p>
+
+            <p>
+                <strong>Price:</strong>
+                ₦{{ book[3] }}
+            </p>
+            <a href="{{ url_for('edit_book', book_id=book[0]) }}">
+                Edit Ebook
+            </a>
+
+            <br>
+
+            <a href="{{ url_for('delete_book', book_id=book[0]) }}">
+                Delete Ebook
+            </a>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No ebooks found.</p>
+
+    {% endif %}
+
+</body>
+</html>

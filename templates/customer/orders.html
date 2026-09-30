@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders</title>
+</head>
+<body>
+
+    <h1>My Orders</h1>
+
+    {% if orders %}
+
+        {% for order in orders %}
+
+            <h2>
+                <a href="{{ url_for('order_details', order_id=order[0]) }}">
+                    Order #{{ order[0] }}
+                </a>
+            </h2>
+
+            <p>
+                <strong>Total:</strong>
+                ₦{{ order[1] }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ order[2] }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ order[3] }}
+            </p>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>You have no orders yet.</p>
+
+    {% endif %}
+
+</body>
+</html>

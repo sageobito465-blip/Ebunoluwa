@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+</head>
+<body>
+
+    <h1>Checkout</h1>
+
+    {% for item in cart_items %}
+
+        <h2>{{ item[1] }}</h2>
+
+        <p><strong>Price:</strong> ₦{{ item[2] }}</p>
+
+        <p><strong>Quantity:</strong> {{ item[3] }}</p>
+
+    {% endfor %}
+
+    <h2>Total: ₦{{ total }}</h2>
+
+    <p>Review your order before payment.</p>
+    <form method="POST" action="{{ url_for('place_order') }}">
+
+        <button type="submit">Place Order</button>
+
+    </form>
+
+</body>
+</html>

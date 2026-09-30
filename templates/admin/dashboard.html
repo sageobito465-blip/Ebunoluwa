@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <p>Welcome, Administrator!</p>
+
+    <h2>Management</h2>
+
+    <ul>
+        <li>
+            <a href="{{ url_for('manage_books') }}">
+                Ebooks
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('manage_categories') }}">
+                Categories
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('admin_orders') }}">
+                Orders
+            </a>
+        </li>
+        <li>Customers</li>
+    </ul>
+
+</body>
+</html>
