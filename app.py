@@ -14,7 +14,7 @@ import uuid
 app = Flask(__name__)
 
 # Secret key for sessions
-app.secret_key = "dev-secret-key"
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 
 # Home page
@@ -181,19 +181,6 @@ def login():
     # Show the login page
     return render_template("customer/login.html")
 
-
-# Test customer session
-@app.route("/session-test")
-def session_test():
-
-    # Get the user ID from the session
-    user_id = session.get("user_id")
-
-    # Check if the user is logged in
-    if user_id is None:
-        return "You are not logged in", 401
-
-    return f"Logged in user ID: {user_id}"
 
 
 # Customer logout
@@ -639,20 +626,6 @@ def order_details(order_id):
         order=order,
         items=items
     )
-
-
-# Test Paystack configuration
-@app.route("/paystack-test")
-def paystack_test():
-
-    # Get the Paystack secret key
-    secret_key = os.getenv("PAYSTACK_SECRET_KEY")
-
-    # Check if the key exists
-    if secret_key is None:
-        return "Paystack key not found", 500
-
-    return "Paystack key loaded successfully"
 
 
 # Pay for an order
