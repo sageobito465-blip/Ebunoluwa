@@ -39,6 +39,10 @@
                 {{ order[5] }}
             </p>
 
+            <a href="{{ url_for('admin_order_details', order_id=order[0]) }}"> 
+                View Order 
+            </a>
+
             <hr>
 
         {% endfor %}

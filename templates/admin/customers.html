@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Customers</title>
+</head>
+<body>
+
+    <h1>Manage Customers</h1>
+
+    {% if customers %}
+
+        {% for customer in customers %}
+
+            <h2>{{ customer[1] }}</h2>
+
+            <p>
+                <strong>Email:</strong>
+                {{ customer[2] }}
+            </p>
+
+            <p>
+                <strong>Account Created:</strong>
+                {{ customer[4] }}
+            </p>
+
+            <a href="{{ url_for('admin_customer_details', customer_id=customer[0]) }}">
+                View Customer
+            </a>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No customers found.</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('admin_dashboard') }}">
+        Back to Dashboard
+    </a>
+
+</body>
+</html>

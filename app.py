@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, session, redirect, url_for,  send_from_directory
+from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
 
 from database import get_connection
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from werkzeug.utils import secure_filename
 
 import os
 import requests
 import uuid
+
 
 app = Flask(__name__)
 
@@ -24,6 +26,7 @@ def home():
 
     # Create a cursor and get all categories
     cursor = connection.cursor()
+
     cursor.execute("SELECT name FROM categories")
     categories = cursor.fetchall()
 
@@ -62,6 +65,7 @@ def book_details(book_id):
 
     # Find the selected book
     cursor = connection.cursor()
+
     cursor.execute("""
         SELECT
             books.id,
@@ -108,6 +112,7 @@ def register():
 
         # Hash the password
         hashed_password = generate_password_hash(password)
+
         # Save the customer to the database
         connection = get_connection()
         cursor = connection.cursor()
@@ -125,9 +130,10 @@ def register():
 
         return "Registration successful!"
 
-    
     # Show the registration page
     return render_template("customer/register.html")
+
+
 # Customer login
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -162,6 +168,7 @@ def login():
 
         # Check the password
         if check_password_hash(user[3], password):
+
             session["user_id"] = user[0]
 
             if user[4] == "Admin":
@@ -173,6 +180,7 @@ def login():
 
     # Show the login page
     return render_template("customer/login.html")
+
 
 # Test customer session
 @app.route("/session-test")
@@ -187,6 +195,7 @@ def session_test():
 
     return f"Logged in user ID: {user_id}"
 
+
 # Customer logout
 @app.route("/logout")
 def logout():
@@ -195,6 +204,7 @@ def logout():
     session.pop("user_id", None)
 
     return "You have been logged out"
+
 
 # Customer dashboard
 @app.route("/customer")
@@ -228,7 +238,11 @@ def customer_dashboard():
     if user is None:
         return "User not found", 404
 
-    return render_template("customer/dashboard.html", user=user)
+    return render_template(
+        "customer/dashboard.html",
+        user=user
+    )
+
 
 # Add book to cart
 @app.route("/cart/add/<int:book_id>")
@@ -282,7 +296,6 @@ def add_to_cart(book_id):
         message = "Book added to cart"
 
     else:
-
         message = "Book is already in your cart"
 
     # Close the database connection
@@ -290,6 +303,7 @@ def add_to_cart(book_id):
     connection.close()
 
     return message
+
 
 # Customer cart
 @app.route("/cart")
@@ -330,10 +344,11 @@ def cart():
     connection.close()
 
     return render_template(
-    "customer/cart.html",
-    cart_items=cart_items,
-    total=total
+        "customer/cart.html",
+        cart_items=cart_items,
+        total=total
     )
+
 
 # Remove book from cart
 @app.route("/cart/remove/<int:cart_id>")
@@ -363,6 +378,7 @@ def remove_from_cart(cart_id):
     connection.close()
 
     return redirect(url_for("cart"))
+
 
 # Update cart quantity
 @app.route("/cart/update/<int:cart_id>", methods=["POST"])
@@ -396,6 +412,7 @@ def update_cart(cart_id):
     connection.close()
 
     return redirect(url_for("cart"))
+
 
 # Checkout page
 @app.route("/checkout")
@@ -445,6 +462,7 @@ def checkout():
         cart_items=cart_items,
         total=total
     )
+
 
 # Place customer order
 @app.route("/order/place", methods=["POST"])
@@ -522,6 +540,7 @@ def place_order():
 
     return f"Order placed successfully! Order ID: {order_id}"
 
+
 # Customer orders
 @app.route("/orders")
 def customer_orders():
@@ -547,7 +566,7 @@ def customer_orders():
         FROM orders
         WHERE user_id = %s
         ORDER BY created_at DESC
-    """, (user_id,))
+    """ , (user_id,))
 
     orders = cursor.fetchall()
 
@@ -559,6 +578,7 @@ def customer_orders():
         "customer/orders.html",
         orders=orders
     )
+
 
 # Order details page
 @app.route("/orders/<int:order_id>")
@@ -597,16 +617,16 @@ def order_details(order_id):
 
     # Get the books in the order
     cursor.execute("""
-    SELECT
-        books.title,
-        books.author,
-        order_items.price,
-        order_items.quantity
-    FROM order_items
-    JOIN books
-        ON order_items.book_id = books.id
-    WHERE order_items.order_id = %s
-""", (order_id,))
+        SELECT
+            books.title,
+            books.author,
+            order_items.price,
+            order_items.quantity
+        FROM order_items
+        JOIN books
+            ON order_items.book_id = books.id
+        WHERE order_items.order_id = %s
+    """, (order_id,))
 
     items = cursor.fetchall()
 
@@ -621,12 +641,6 @@ def order_details(order_id):
     )
 
 
-
-
-
-
-
-
 # Test Paystack configuration
 @app.route("/paystack-test")
 def paystack_test():
@@ -639,7 +653,6 @@ def paystack_test():
         return "Paystack key not found", 500
 
     return "Paystack key loaded successfully"
-
 
 
 # Pay for an order
@@ -749,6 +762,7 @@ def pay_order(order_id):
 
     return redirect(authorization_url)
 
+
 # Verify Paystack payment
 @app.route("/payment/callback")
 def payment_callback():
@@ -810,6 +824,7 @@ def payment_callback():
     if payment[2] == "Success":
         cursor.close()
         connection.close()
+
         return redirect(
             url_for(
                 "order_details",
@@ -870,25 +885,25 @@ def customer_library():
 
     # Get books from paid orders
     cursor.execute("""
-    SELECT
-        books.id,
-        books.title,
-        books.author,
-        books.cover_image
-    FROM orders
-    JOIN order_items
-        ON orders.id = order_items.order_id
-    JOIN books
-        ON order_items.book_id = books.id
-    WHERE orders.user_id = %s
-    AND orders.status = %s
-    GROUP BY
-        books.id,
-        books.title,
-        books.author,
-        books.cover_image
-    ORDER BY MAX(orders.created_at) DESC
-""", (user_id, "Paid"))
+        SELECT
+            books.id,
+            books.title,
+            books.author,
+            books.cover_image
+        FROM orders
+        JOIN order_items
+            ON orders.id = order_items.order_id
+        JOIN books
+            ON order_items.book_id = books.id
+        WHERE orders.user_id = %s
+        AND orders.status = %s
+        GROUP BY
+            books.id,
+            books.title,
+            books.author,
+            books.cover_image
+        ORDER BY MAX(orders.created_at) DESC
+    """, (user_id, "Paid"))
 
     books = cursor.fetchall()
 
@@ -900,7 +915,6 @@ def customer_library():
         "customer/library.html",
         books=books
     )
-
 
 
 # Download purchased ebook
@@ -959,6 +973,7 @@ def download_ebook(book_id):
 # Admin dashboard
 @app.route("/admin")
 def admin_dashboard():
+
     user_id = session.get("user_id")
 
     if user_id is None:
@@ -1035,6 +1050,7 @@ def manage_categories():
         "admin/categories.html",
         categories=categories
     )
+
 
 # Add category
 @app.route("/admin/categories/add", methods=["POST"])
@@ -1140,6 +1156,438 @@ def admin_orders():
         orders=orders
     )
 
+
+# Admin customer
+@app.route("/admin/customers")
+def admin_customers():
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            email,
+            role,
+            created_at
+        FROM users
+        WHERE role = %s
+        ORDER BY created_at DESC
+    """, ("Customer",))
+
+    customers = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "admin/customers.html",
+        customers=customers
+    )
+
+
+# Admin customer details
+@app.route("/admin/customers/<int:customer_id>")
+def admin_customer_details(customer_id):
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            email,
+            created_at
+        FROM users
+        WHERE id = %s
+        AND role = %s
+    """, (customer_id, "Customer"))
+
+    customer = cursor.fetchone()
+
+    if customer is None:
+        cursor.close()
+        connection.close()
+        return "Customer not found", 404
+
+    cursor.execute("""
+        SELECT
+            id,
+            total_amount,
+            status,
+            created_at
+        FROM orders
+        WHERE user_id = %s
+        ORDER BY created_at DESC
+    """, (customer_id,))
+
+    orders = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "admin/customer_details.html",
+        customer=customer,
+        orders=orders
+    )
+
+# Edit customer
+@app.route("/admin/customers/edit/<int:customer_id>", methods=["GET", "POST"])
+def edit_customer(customer_id):
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            email
+        FROM users
+        WHERE id = %s
+        AND role = %s
+    """, (customer_id, "Customer"))
+
+    customer = cursor.fetchone()
+
+    if customer is None:
+        cursor.close()
+        connection.close()
+        return "Customer not found", 404
+
+    if request.method == "POST":
+
+        name = request.form["name"].strip()
+        email = request.form["email"].strip()
+
+        if not name or not email:
+            cursor.close()
+            connection.close()
+            return "Name and email are required", 400
+
+        cursor.execute("""
+            UPDATE users
+            SET name = %s,
+                email = %s
+            WHERE id = %s
+            AND role = %s
+        """, (name, email, customer_id, "Customer"))
+
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+
+        return redirect(
+            url_for(
+                "admin_customer_details",
+                customer_id=customer_id
+            )
+        )
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "admin/edit_customer.html",
+        customer=customer
+    )
+
+
+
+
+# Delete customer
+@app.route("/admin/customers/delete/<int:customer_id>")
+def delete_customer(customer_id):
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT id
+        FROM users
+        WHERE id = %s
+        AND role = %s
+    """, (customer_id, "Customer"))
+
+    customer = cursor.fetchone()
+
+    if customer is None:
+        cursor.close()
+        connection.close()
+        return "Customer not found", 404
+
+    cursor.execute("""
+        SELECT id
+        FROM orders
+        WHERE user_id = %s
+        LIMIT 1
+    """, (customer_id,))
+
+    order = cursor.fetchone()
+
+    if order is not None:
+        cursor.close()
+        connection.close()
+        return "This customer cannot be deleted because they have orders", 400
+
+    cursor.execute("""
+        DELETE FROM users
+        WHERE id = %s
+        AND role = %s
+    """, (customer_id, "Customer"))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for("admin_customers"))
+
+# Admin order details
+@app.route("/admin/orders/<int:order_id>")
+def admin_order_details(order_id):
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT
+            orders.id,
+            users.name,
+            users.email,
+            orders.total_amount,
+            orders.status,
+            orders.created_at,
+            users.id
+        FROM orders
+        JOIN users
+            ON orders.user_id = users.id
+        WHERE orders.id = %s
+    """, (order_id,))
+
+    order = cursor.fetchone()
+
+    if order is None:
+        cursor.close()
+        connection.close()
+        return "Order not found", 404
+
+    cursor.execute("""
+        SELECT
+            books.title,
+            books.author,
+            order_items.price,
+            order_items.quantity
+        FROM order_items
+        JOIN books
+            ON order_items.book_id = books.id
+        WHERE order_items.order_id = %s
+    """, (order_id,))
+
+    items = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "admin/order_details.html",
+        order=order,
+        items=items
+    )
+
+
+
+
+# Update order status
+@app.route("/admin/orders/<int:order_id>/status", methods=["POST"])
+def update_order_status(order_id):
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT id
+        FROM orders
+        WHERE id = %s
+    """, (order_id,))
+
+    order = cursor.fetchone()
+
+    if order is None:
+        cursor.close()
+        connection.close()
+        return "Order not found", 404
+
+    status = request.form["status"]
+
+    if status not in ["Pending", "Paid", "Cancelled"]:
+        cursor.close()
+        connection.close()
+        return "Invalid order status", 400
+
+    cursor.execute("""
+        UPDATE orders
+        SET status = %s
+        WHERE id = %s
+    """, (status, order_id))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return redirect(
+        url_for(
+            "admin_order_details",
+            order_id=order_id
+        )
+    )
+
+
+
+
 # Manage ebooks
 @app.route("/admin/books")
 def manage_books():
@@ -1193,6 +1641,7 @@ def manage_books():
         "admin/books.html",
         books=books
     )
+
 
 # Add ebook page
 @app.route("/admin/books/add", methods=["GET", "POST"])
@@ -1248,6 +1697,7 @@ def add_book():
 
         if ebook_file is None or ebook_file.filename == "":
             return "Ebook PDF is required", 400
+
         ebook_filename = secure_filename(ebook_file.filename)
 
         if cover_image and cover_image.filename:
@@ -1310,12 +1760,11 @@ def add_book():
 
         return redirect(url_for("manage_books"))
 
-
-
     return render_template(
         "admin/add_book.html",
         categories=categories
     )
+
 
 # Edit ebook
 @app.route("/admin/books/edit/<int:book_id>", methods=["GET", "POST"])
@@ -1416,6 +1865,7 @@ def edit_book(book_id):
         categories=categories
     )
 
+
 # Delete ebook
 @app.route("/admin/books/delete/<int:book_id>")
 def delete_book(book_id):
@@ -1454,6 +1904,7 @@ def delete_book(book_id):
 
     book = cursor.fetchone()
 
+    # Check if the ebook has been purchased
     cursor.execute("""
         SELECT id
         FROM order_items
@@ -1467,10 +1918,12 @@ def delete_book(book_id):
         cursor.close()
         connection.close()
         return "This ebook cannot be deleted because it has been purchased", 400
-        if book is None:
-            cursor.close()
-            connection.close()
-            return "Ebook not found", 404
+
+    # Check if the ebook exists
+    if book is None:
+        cursor.close()
+        connection.close()
+        return "Ebook not found", 404
 
     cursor.execute("""
         DELETE FROM books
@@ -1515,12 +1968,6 @@ def delete_book(book_id):
             os.remove(cover_path)
 
     return redirect(url_for("manage_books"))
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
