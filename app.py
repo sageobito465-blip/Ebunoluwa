@@ -969,7 +969,6 @@ def download_ebook(book_id):
         as_attachment=True
     )
 
-
 # Admin dashboard
 @app.route("/admin")
 def admin_dashboard():
@@ -983,27 +982,64 @@ def admin_dashboard():
     cursor = connection.cursor()
 
     cursor.execute("""
-        SELECT name, email, role
+        SELECT role
         FROM users
         WHERE id = %s
     """, (user_id,))
 
     user = cursor.fetchone()
 
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM books
+    """)
+
+    total_books = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM users
+        WHERE role = %s
+    """, ("Customer",))
+
+    total_customers = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM orders
+    """)
+
+    total_orders = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COALESCE(SUM(total_amount), 0)
+        FROM orders
+        WHERE status = %s
+    """, ("Paid",))
+
+    total_revenue = cursor.fetchone()[0]
+
     cursor.close()
     connection.close()
 
-    if user is None:
-        return "User not found", 404
-
-    if user[2] != "Admin":
-        return "Access denied", 403
-
     return render_template(
         "admin/dashboard.html",
-        user=user
+        user=user,
+        total_books=total_books,
+        total_customers=total_customers,
+        total_orders=total_orders,
+        total_revenue=total_revenue
     )
-
 
 # Manage categories
 @app.route("/admin/categories")
