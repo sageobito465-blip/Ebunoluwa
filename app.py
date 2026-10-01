@@ -1193,6 +1193,66 @@ def admin_orders():
     )
 
 
+# Admin payments
+@app.route("/admin/payments")
+def admin_payments():
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return "Please login first", 401
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT role
+        FROM users
+        WHERE id = %s
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        cursor.close()
+        connection.close()
+        return "User not found", 404
+
+    if user[0] != "Admin":
+        cursor.close()
+        connection.close()
+        return "Access denied", 403
+
+    cursor.execute("""
+        SELECT
+            payments.id,
+            payments.order_id,
+            users.name,
+            users.email,
+            payments.reference,
+            payments.amount,
+            payments.status,
+            payments.paid_at
+        FROM payments
+        JOIN orders
+            ON payments.order_id = orders.id
+        JOIN users
+            ON orders.user_id = users.id
+        ORDER BY payments.id DESC
+    """)
+
+    payments = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "admin/payments.html",
+        payments=payments
+    )
+
+
+
 # Admin customer
 @app.route("/admin/customers")
 def admin_customers():

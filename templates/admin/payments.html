@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Payments</title>
+</head>
+<body>
+
+    <h1>Manage Payments</h1>
+
+    {% if payments %}
+
+        {% for payment in payments %}
+
+            <h2>Payment #{{ payment[0] }}</h2>
+
+            <p>
+                <strong>Order ID:</strong>
+                {{ payment[1] }}
+            </p>
+
+            <p>
+                <strong>Customer:</strong>
+                {{ payment[2] }}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                {{ payment[3] }}
+            </p>
+
+            <p>
+                <strong>Reference:</strong>
+                {{ payment[4] }}
+            </p>
+
+            <p>
+                <strong>Amount:</strong>
+                ₦{{ payment[5] }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ payment[6] }}
+            </p>
+
+            <p>
+                <strong>Paid At:</strong>
+                {{ payment[7] }}
+            </p>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No payments found.</p>
+
+    {% endif %}
+
+    <a href="{{ url_for('admin_dashboard') }}">
+        Back to Dashboard
+    </a>
+
+</body>
+</html>
+
