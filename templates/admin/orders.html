@@ -42,56 +42,100 @@
 
 {% block content %}
 
-    <h2>Manage Orders</h2>
+    <section class="admin-orders-page">
 
-    {% if orders %}
+        <div class="admin-page-header">
 
-        {% for order in orders %}
+            <div>
 
-            <h3>Order #{{ order[0] }}</h3>
+                <h2>Manage Orders</h2>
 
-            <p>
-                <strong>Customer:</strong>
-                {{ order[1] }}
-            </p>
+                <p>
+                    View and manage customer orders.
+                </p>
 
-            <p>
-                <strong>Email:</strong>
-                {{ order[2] }}
-            </p>
+            </div>
 
-            <p>
-                <strong>Total:</strong>
-                ₦{{ order[3] }}
-            </p>
+        </div>
 
-            <p>
-                <strong>Status:</strong>
-                {{ order[4] }}
-            </p>
+        {% if orders %}
 
-            <p>
-                <strong>Date:</strong>
-                {{ order[5] }}
-            </p>
+            <div class="admin-orders-list">
 
-            <a href="{{ url_for('admin_order_details', order_id=order[0]) }}">
-                View Order
-            </a>
+                {% for order in orders %}
 
-            <hr>
+                    <article class="admin-order-card">
 
-        {% endfor %}
+                        <div class="admin-order-header">
 
-    {% else %}
+                            <h3>
+                                Order #{{ order[0] }}
+                            </h3>
 
-        <p>No orders found.</p>
+                            <span class="order-status">
+                                {{ order[4] }}
+                            </span>
 
-    {% endif %}
+                        </div>
 
-    <a href="{{ url_for('admin_dashboard') }}">
-        Back to Dashboard
-    </a>
+                        <div class="admin-order-info">
+
+                            <p>
+                                <strong>Customer:</strong>
+                                {{ order[1] }}
+                            </p>
+
+                            <p>
+                                <strong>Email:</strong>
+                                {{ order[2] }}
+                            </p>
+
+                            <p>
+                                <strong>Total:</strong>
+                                ₦{{ order[3] }}
+                            </p>
+
+                            <p>
+                                <strong>Date:</strong>
+                                {{ order[5] }}
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for('admin_order_details', order_id=order[0]) }}"
+                            class="button"
+                        >
+                            View Order
+                        </a>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-admin-page">
+
+                <h3>No orders found.</h3>
+
+                <p>
+                    Customer orders will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="back-link"
+        >
+            Back to Dashboard
+        </a>
+
+    </section>
 
 {% endblock %}
-

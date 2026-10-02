@@ -42,46 +42,88 @@
 
 {% block content %}
 
-    <h2>Manage Categories</h2>
+    <section class="admin-categories-page">
 
-    <h3>Add Category</h3>
+        <div class="admin-page-header">
 
-    <form method="POST" action="{{ url_for('add_category') }}">
+            <div>
+                <h2>Manage Categories</h2>
 
-        <label>Category Name:</label>
+                <p>
+                    Organize ebooks into categories.
+                </p>
+            </div>
 
-        <input
-            type="text"
-            name="name"
-            required
-        >
+        </div>
 
-        <button type="submit">
-            Add Category
-        </button>
+        <section class="category-form-card">
 
-    </form>
+            <h3>Add Category</h3>
 
-    <h3>Existing Categories</h3>
+            <form
+                method="POST"
+                action="{{ url_for('add_category') }}"
+            >
 
-    {% if categories %}
+                <label for="category-name">
+                    Category Name
+                </label>
 
-        <ul>
+                <div class="category-form-row">
 
-            {% for category in categories %}
+                    <input
+                        id="category-name"
+                        type="text"
+                        name="name"
+                        required
+                    >
 
-                <li>
-                    {{ category[1] }}
-                </li>
+                    <button type="submit">
+                        Add Category
+                    </button>
 
-            {% endfor %}
+                </div>
 
-        </ul>
+            </form>
 
-    {% else %}
+        </section>
 
-        <p>No categories found.</p>
+        <section class="admin-category-list">
 
-    {% endif %}
+            <h2>Existing Categories</h2>
+
+            {% if categories %}
+
+                <div class="category-grid">
+
+                    {% for category in categories %}
+
+                        <div class="category-card">
+
+                            {{ category[1] }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-admin-page">
+
+                    <h3>No categories found.</h3>
+
+                    <p>
+                        Add a category to organize your ebooks.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </section>
 
 {% endblock %}

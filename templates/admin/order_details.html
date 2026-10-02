@@ -42,121 +42,180 @@
 
 {% block content %}
 
-    <h2>Order #{{ order[0] }}</h2>
+    <section class="admin-order-details-page">
 
-    <p>
-        <strong>Customer:</strong>
-        {{ order[1] }}
-    </p>
+        <div class="admin-order-details-header">
 
-    <p>
-        <strong>Email:</strong>
-        {{ order[2] }}
-    </p>
+            <div>
 
-    <p>
-        <strong>Total:</strong>
-        ₦{{ order[3] }}
-    </p>
+                <h2>
+                    Order #{{ order[0] }}
+                </h2>
 
-    <p>
-        <strong>Status:</strong>
-        {{ order[4] }}
-    </p>
+                <p>
+                    Customer order details and status.
+                </p>
 
-    <form
-        method="POST"
-        action="{{ url_for('update_order_status', order_id=order[0]) }}"
-    >
+            </div>
 
-        <label>Update Status:</label>
+            <span class="order-status">
+                {{ order[4] }}
+            </span>
 
-        <select name="status">
+        </div>
 
-            <option
-                value="Pending"
-                {% if order[4] == "Pending" %}selected{% endif %}
-            >
-                Pending
-            </option>
+        <section class="admin-order-customer">
 
-            <option
-                value="Paid"
-                {% if order[4] == "Paid" %}selected{% endif %}
-            >
-                Paid
-            </option>
-
-            <option
-                value="Cancelled"
-                {% if order[4] == "Cancelled" %}selected{% endif %}
-            >
-                Cancelled
-            </option>
-
-        </select>
-
-        <button type="submit">
-            Update Status
-        </button>
-
-    </form>
-
-    <p>
-        <strong>Date:</strong>
-        {{ order[5] }}
-    </p>
-
-    <hr>
-
-    <h2>Books in Order</h2>
-
-    {% if items %}
-
-        {% for item in items %}
-
-            <h3>{{ item[0] }}</h3>
+            <h2>Customer Information</h2>
 
             <p>
-                <strong>Author:</strong>
-                {{ item[1] }}
+                <strong>Customer:</strong>
+                {{ order[1] }}
             </p>
 
             <p>
-                <strong>Price:</strong>
-                ₦{{ item[2] }}
+                <strong>Email:</strong>
+                {{ order[2] }}
             </p>
 
             <p>
-                <strong>Quantity:</strong>
-                {{ item[3] }}
+                <strong>Date:</strong>
+                {{ order[5] }}
             </p>
 
-            <hr>
+        </section>
 
-        {% endfor %}
+        <section class="admin-order-status">
 
-    {% else %}
+            <h2>Order Status</h2>
 
-        <p>No books found for this order.</p>
+            <form
+                method="POST"
+                action="{{ url_for('update_order_status', order_id=order[0]) }}"
+            >
 
-    {% endif %}
+                <label for="status">
+                    Update Status
+                </label>
 
-    <a href="{{ url_for('admin_customer_details', customer_id=order[6]) }}">
-        Back to Customer
-    </a>
+                <select id="status" name="status">
 
-    <br>
+                    <option
+                        value="Pending"
+                        {% if order[4] == "Pending" %}selected{% endif %}
+                    >
+                        Pending
+                    </option>
 
-    <a href="{{ url_for('admin_orders') }}">
-        Back to Orders
-    </a>
+                    <option
+                        value="Paid"
+                        {% if order[4] == "Paid" %}selected{% endif %}
+                    >
+                        Paid
+                    </option>
 
-    <br>
+                    <option
+                        value="Cancelled"
+                        {% if order[4] == "Cancelled" %}selected{% endif %}
+                    >
+                        Cancelled
+                    </option>
 
-    <a href="{{ url_for('admin_dashboard') }}">
-        Back to Dashboard
-    </a>
+                </select>
+
+                <button type="submit">
+                    Update Status
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="admin-ordered-books">
+
+            <h2>Books in Order</h2>
+
+            {% if items %}
+
+                <div class="admin-ordered-books-list">
+
+                    {% for item in items %}
+
+                        <article class="admin-ordered-book">
+
+                            <div>
+
+                                <h3>
+                                    {{ item[0] }}
+                                </h3>
+
+                                <p>
+                                    <strong>Author:</strong>
+                                    {{ item[1] }}
+                                </p>
+
+                                <p>
+                                    <strong>Quantity:</strong>
+                                    {{ item[3] }}
+                                </p>
+
+                            </div>
+
+                            <p class="admin-ordered-book-price">
+                                ₦{{ item[2] }}
+                            </p>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-admin-page">
+
+                    <h3>No books found for this order.</h3>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <div class="admin-order-total">
+
+            <h2>
+                Total: ₦{{ order[3] }}
+            </h2>
+
+        </div>
+
+        <div class="admin-order-links">
+
+            <a
+                href="{{ url_for('admin_customer_details', customer_id=order[6]) }}"
+                class="back-link"
+            >
+                Back to Customer
+            </a>
+
+            <a
+                href="{{ url_for('admin_orders') }}"
+                class="back-link"
+            >
+                Back to Orders
+            </a>
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="back-link"
+            >
+                Back to Dashboard
+            </a>
+
+        </div>
+
+    </section>
 
 {% endblock %}
-

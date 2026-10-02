@@ -34,65 +34,108 @@
 
 {% block content %}
 
-    <h2>My Cart</h2>
+    <section class="cart-page">
 
-    {% if cart_items %}
+        <h2>My Cart</h2>
 
-        {% for item in cart_items %}
+        {% if cart_items %}
 
-            <h3>{{ item[1] }}</h3>
+            <div class="cart-list">
 
-            <p>
-                <strong>Author:</strong>
-                {{ item[2] }}
-            </p>
+                {% for item in cart_items %}
 
-            <p>
-                <strong>Price:</strong>
-                ₦{{ item[3] }}
-            </p>
+                    <article class="cart-item">
 
-            <form method="POST" action="{{ url_for('update_cart', cart_id=item[0]) }}">
+                        <div class="cart-item-info">
 
-                <label>Quantity:</label>
+                            <h3>{{ item[1] }}</h3>
 
-                <input
-                    type="number"
-                    name="quantity"
-                    value="{{ item[4] }}"
-                    min="1"
-                    required
+                            <p>
+                                <strong>Author:</strong>
+                                {{ item[2] }}
+                            </p>
+
+                            <p class="cart-price">
+                                ₦{{ item[3] }}
+                            </p>
+
+                        </div>
+
+                        <div class="cart-item-actions">
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('update_cart', cart_id=item[0]) }}"
+                            >
+
+                                <label for="quantity-{{ item[0] }}">
+                                    Quantity
+                                </label>
+
+                                <input
+                                    id="quantity-{{ item[0] }}"
+                                    type="number"
+                                    name="quantity"
+                                    value="{{ item[4] }}"
+                                    min="1"
+                                    required
+                                >
+
+                                <button type="submit">
+                                    Update
+                                </button>
+
+                            </form>
+
+                            <a
+                                href="{{ url_for('remove_from_cart', cart_id=item[0]) }}"
+                                class="remove-link"
+                            >
+                                Remove
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="cart-summary">
+
+                <h2>Total: ₦{{ total }}</h2>
+
+                <a
+                    href="{{ url_for('checkout') }}"
+                    class="button"
                 >
+                    Checkout
+                </a>
 
-                <button type="submit">
-                    Update
-                </button>
+            </div>
 
-            </form>
+        {% else %}
 
-            <a href="{{ url_for('remove_from_cart', cart_id=item[0]) }}">
-                Remove
-            </a>
+            <div class="empty-cart">
 
-            <hr>
+                <h3>Your cart is empty</h3>
 
-        {% endfor %}
+                <p>
+                    Browse our ebooks and add something to your cart.
+                </p>
 
-        <h2>Total: ₦{{ total }}</h2>
+                <a
+                    href="{{ url_for('home') }}"
+                    class="button"
+                >
+                    Continue Shopping
+                </a>
 
-        <a href="{{ url_for('checkout') }}">
-            Checkout
-        </a>
+            </div>
 
-    {% else %}
+        {% endif %}
 
-        <p>Your cart is empty.</p>
-
-        <a href="{{ url_for('home') }}">
-            Continue Shopping
-        </a>
-
-    {% endif %}
+    </section>
 
 {% endblock %}
-

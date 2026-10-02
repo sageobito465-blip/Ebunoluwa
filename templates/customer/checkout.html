@@ -34,43 +34,73 @@
 
 {% block content %}
 
-    <h2>Checkout</h2>
+    <section class="checkout-page">
 
-    {% for item in cart_items %}
+        <h2>Checkout</h2>
 
-        <h3>{{ item[1] }}</h3>
-
-        <p>
-            <strong>Price:</strong>
-            ₦{{ item[2] }}
+        <p class="checkout-intro">
+            Review your order before payment.
         </p>
 
-        <p>
-            <strong>Quantity:</strong>
-            {{ item[3] }}
-        </p>
+        <div class="checkout-items">
 
-    {% endfor %}
+            {% for item in cart_items %}
 
-    <h2>Total: ₦{{ total }}</h2>
+                <article class="checkout-item">
 
-    <p>
-        Review your order before payment.
-    </p>
+                    <div>
 
-    <form method="POST" action="{{ url_for('place_order') }}">
+                        <h3>{{ item[1] }}</h3>
 
-        <button type="submit">
-            Place Order
-        </button>
+                        <p>
+                            Price: ₦{{ item[2] }}
+                        </p>
 
-    </form>
+                        <p>
+                            Quantity: {{ item[3] }}
+                        </p>
 
-    <br>
+                    </div>
 
-    <a href="{{ url_for('cart') }}">
-        Back to Cart
-    </a>
+                    <p class="checkout-item-price">
+                        ₦{{ item[2] * item[3] }}
+                    </p>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="checkout-summary">
+
+            <h2>
+                Total: ₦{{ total }}
+            </h2>
+
+            <form
+                method="POST"
+                action="{{ url_for('place_order') }}"
+            >
+
+                <button
+                    type="submit"
+                    class="button"
+                >
+                    Place Order
+                </button>
+
+            </form>
+
+            <a
+                href="{{ url_for('cart') }}"
+                class="back-link"
+            >
+                Back to Cart
+            </a>
+
+        </div>
+
+    </section>
 
 {% endblock %}
-

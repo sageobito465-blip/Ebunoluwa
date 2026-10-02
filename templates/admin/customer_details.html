@@ -42,84 +42,146 @@
 
 {% block content %}
 
-    <h2>{{ customer[1] }}</h2>
+    <section class="admin-customer-details-page">
 
-    <p>
-        <strong>Email:</strong>
-        {{ customer[2] }}
-    </p>
+        <div class="admin-customer-details-header">
 
-    <p>
-        <strong>Account Created:</strong>
-        {{ customer[3] }}
-    </p>
-
-    <hr>
-
-    <h2>Customer Orders</h2>
-
-    {% if orders %}
-
-        {% for order in orders %}
-
-            <h3>Order #{{ order[0] }}</h3>
+            <h2>
+                {{ customer[1] }}
+            </h2>
 
             <p>
-                <strong>Total:</strong>
-                ₦{{ order[1] }}
+                Customer account details.
+            </p>
+
+        </div>
+
+        <section class="admin-customer-info-card">
+
+            <h2>Customer Information</h2>
+
+            <p>
+                <strong>Email:</strong>
+                {{ customer[2] }}
             </p>
 
             <p>
-                <strong>Status:</strong>
-                {{ order[2] }}
+                <strong>Account Created:</strong>
+                {{ customer[3] }}
             </p>
 
-            <p>
-                <strong>Date:</strong>
-                {{ order[3] }}
-            </p>
+        </section>
 
-            <a href="{{ url_for('admin_order_details', order_id=order[0]) }}">
-                View Order
+        <section class="admin-customer-orders">
+
+            <h2>Customer Orders</h2>
+
+            {% if orders %}
+
+                <div class="admin-customer-orders-list">
+
+                    {% for order in orders %}
+
+                        <article class="admin-customer-order-card">
+
+                            <div class="admin-customer-order-header">
+
+                                <h3>
+                                    Order #{{ order[0] }}
+                                </h3>
+
+                                <span class="order-status">
+                                    {{ order[2] }}
+                                </span>
+
+                            </div>
+
+                            <div class="admin-customer-order-info">
+
+                                <p>
+                                    <strong>Total:</strong>
+                                    ₦{{ order[1] }}
+                                </p>
+
+                                <p>
+                                    <strong>Date:</strong>
+                                    {{ order[3] }}
+                                </p>
+
+                            </div>
+
+                            <a
+                                href="{{ url_for('admin_order_details', order_id=order[0]) }}"
+                                class="button"
+                            >
+                                View Order
+                            </a>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-admin-page">
+
+                    <h3>This customer has no orders.</h3>
+
+                    <p>
+                        Customer orders will appear here.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <section class="admin-customer-account">
+
+            <h2>Customer Account</h2>
+
+            <div class="admin-customer-account-actions">
+
+                <a
+                    href="{{ url_for('edit_customer', customer_id=customer[0]) }}"
+                    class="button"
+                >
+                    Edit Customer
+                </a>
+
+                <a
+                    href="{{ url_for('delete_customer', customer_id=customer[0]) }}"
+                    class="delete-link"
+                    onclick="return confirm('Are you sure you want to delete this customer?');"
+                >
+                    Delete Customer
+                </a>
+
+            </div>
+
+        </section>
+
+        <div class="admin-customer-details-links">
+
+            <a
+                href="{{ url_for('admin_customers') }}"
+                class="back-link"
+            >
+                Back to Customers
             </a>
 
-            <hr>
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="back-link"
+            >
+                Back to Dashboard
+            </a>
 
-        {% endfor %}
+        </div>
 
-    {% else %}
-
-        <p>This customer has no orders.</p>
-
-    {% endif %}
-
-    <hr>
-
-    <h2>Customer Account</h2>
-
-    <a href="{{ url_for('edit_customer', customer_id=customer[0]) }}">
-        Edit Customer
-    </a>
-
-    <br>
-
-    <a
-        href="{{ url_for('delete_customer', customer_id=customer[0]) }}"
-        onclick="return confirm('Are you sure you want to delete this customer?');"
-    >
-        Delete Customer
-    </a>
-
-    <br>
-
-    <a href="{{ url_for('admin_customers') }}">
-        Back to Customers
-    </a>
-
-    <br>
-
-    <a href="{{ url_for('admin_dashboard') }}">
-        Back to Dashboard
-    </a>
+    </section>
 
 {% endblock %}

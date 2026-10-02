@@ -42,61 +42,103 @@
 
 {% block content %}
 
-    <h2>Manage Payments</h2>
+    <section class="admin-payments-page">
 
-    {% if payments %}
+        <div class="admin-page-header">
 
-        {% for payment in payments %}
+            <div>
 
-            <h3>Payment #{{ payment[0] }}</h3>
+                <h2>Manage Payments</h2>
 
-            <p>
-                <strong>Order ID:</strong>
-                {{ payment[1] }}
-            </p>
+                <p>
+                    View payment records and transaction details.
+                </p>
 
-            <p>
-                <strong>Customer:</strong>
-                {{ payment[2] }}
-            </p>
+            </div>
 
-            <p>
-                <strong>Email:</strong>
-                {{ payment[3] }}
-            </p>
+        </div>
 
-            <p>
-                <strong>Reference:</strong>
-                {{ payment[4] }}
-            </p>
+        {% if payments %}
 
-            <p>
-                <strong>Amount:</strong>
-                ₦{{ payment[5] }}
-            </p>
+            <div class="admin-payments-list">
 
-            <p>
-                <strong>Status:</strong>
-                {{ payment[6] }}
-            </p>
+                {% for payment in payments %}
 
-            <p>
-                <strong>Paid At:</strong>
-                {{ payment[7] }}
-            </p>
+                    <article class="admin-payment-card">
 
-            <hr>
+                        <div class="admin-payment-header">
 
-        {% endfor %}
+                            <h3>
+                                Payment #{{ payment[0] }}
+                            </h3>
 
-    {% else %}
+                            <span class="payment-status">
+                                {{ payment[6] }}
+                            </span>
 
-        <p>No payments found.</p>
+                        </div>
 
-    {% endif %}
+                        <div class="admin-payment-info">
 
-    <a href="{{ url_for('admin_dashboard') }}">
-        Back to Dashboard
-    </a>
+                            <p>
+                                <strong>Order ID:</strong>
+                                {{ payment[1] }}
+                            </p>
+
+                            <p>
+                                <strong>Customer:</strong>
+                                {{ payment[2] }}
+                            </p>
+
+                            <p>
+                                <strong>Email:</strong>
+                                {{ payment[3] }}
+                            </p>
+
+                            <p>
+                                <strong>Reference:</strong>
+                                {{ payment[4] }}
+                            </p>
+
+                            <p class="admin-payment-amount">
+                                <strong>Amount:</strong>
+                                ₦{{ payment[5] }}
+                            </p>
+
+                            <p>
+                                <strong>Paid At:</strong>
+                                {{ payment[7] }}
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-admin-page">
+
+                <h3>No payments found.</h3>
+
+                <p>
+                    Payment records will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="back-link"
+        >
+            Back to Dashboard
+        </a>
+
+    </section>
 
 {% endblock %}

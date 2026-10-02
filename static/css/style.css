@@ -45,3 +45,1215 @@ footer {
     color: white;
 }
 
+
+/* Home page */
+
+.hero {
+    background: white;
+    padding: 50px 30px;
+    margin-bottom: 40px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.hero h2 {
+    margin-top: 0;
+    font-size: 32px;
+}
+
+.hero p {
+    font-size: 18px;
+    color: #666;
+}
+
+.categories {
+    margin-bottom: 40px;
+}
+
+.categories h2,
+.ebooks h2 {
+    margin-bottom: 20px;
+}
+
+.category-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.category-item {
+    background: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+}
+
+.ebook-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.ebook-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+.ebook-card h3 {
+    margin-top: 0;
+}
+
+.ebook-card p {
+    color: #555;
+}
+
+.ebook-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #222 !important;
+}
+
+.button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: #222;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.button:hover {
+    background: #444;
+}
+
+/* Book details page */
+
+.book-details {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.book-info {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.book-category {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+.book-info h2 {
+    font-size: 32px;
+    margin: 20px 0 10px 0;
+}
+
+.book-author {
+    color: #666;
+    font-size: 17px;
+}
+
+.book-description {
+    margin-top: 30px;
+}
+
+.book-description h3 {
+    margin-bottom: 10px;
+}
+
+.book-description p {
+    line-height: 1.7;
+    color: #555;
+}
+
+.book-price {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #222;
+}
+/* Cart page */
+
+.cart-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.cart-page > h2 {
+    margin-bottom: 25px;
+}
+
+.cart-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.cart-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.cart-item h3 {
+    margin-top: 0;
+}
+
+.cart-price {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.cart-item-actions {
+    min-width: 220px;
+}
+
+.cart-item-actions form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-item-actions input {
+    width: 70px;
+    padding: 8px;
+}
+
+.cart-item-actions button {
+    padding: 8px 12px;
+    border: none;
+    background: #222;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cart-item-actions button:hover {
+    background: #444;
+}
+
+.remove-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: #b00020;
+}
+
+.cart-summary {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 25px;
+}
+
+.cart-summary h2 {
+    margin-top: 0;
+}
+
+.empty-cart {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 50px 30px;
+    text-align: center;
+}
+
+.empty-cart h3 {
+    margin-top: 0;
+}
+
+/* Checkout page */
+
+.checkout-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.checkout-intro {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.checkout-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.checkout-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.checkout-item h3 {
+    margin-top: 0;
+}
+
+.checkout-item p {
+    color: #555;
+}
+
+.checkout-item-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #222 !important;
+}
+
+.checkout-summary {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 25px;
+}
+
+.checkout-summary h2 {
+    margin-top: 0;
+}
+
+.checkout-summary .button {
+    border: none;
+    cursor: pointer;
+}
+
+.checkout-summary .back-link {
+    margin-top: 15px;
+}
+
+/* My orders page */
+
+.orders-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.order-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.order-header h3 {
+    margin: 0;
+}
+
+.order-header h3 a {
+    color: #222;
+    text-decoration: none;
+}
+
+.order-header h3 a:hover {
+    text-decoration: underline;
+}
+
+.order-status {
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+.order-info {
+    margin: 20px 0;
+}
+
+.order-info p {
+    color: #555;
+}
+
+.empty-orders {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 50px 30px;
+    text-align: center;
+}
+
+.empty-orders h3 {
+    margin-top: 0;
+}
+
+/* Order details page */
+
+.order-details-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.order-details-header {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.order-details-header h2 {
+    margin: 0;
+}
+
+.order-date {
+    color: #666;
+    margin: 15px 0 30px 0;
+}
+
+.ordered-books h2 {
+    margin-bottom: 20px;
+}
+
+.ordered-book {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px 25px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.ordered-book h3 {
+    margin-top: 0;
+}
+
+.ordered-book p {
+    color: #555;
+}
+
+.ordered-book-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #222 !important;
+}
+
+.order-total {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 25px;
+}
+
+.order-total h2 {
+    margin-top: 0;
+}
+
+.order-total .button {
+    border: none;
+    cursor: pointer;
+}
+
+/* My library page */
+
+.library-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.library-intro {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.library-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.library-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.library-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.library-card p {
+    color: #555;
+}
+
+.library-card .button {
+    margin-top: 15px;
+}
+
+.empty-library {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 50px 30px;
+    text-align: center;
+}
+
+.empty-library h3 {
+    margin-top: 0;
+}
+
+
+/* Login page */
+
+.auth-page {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.auth-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 40px;
+}
+
+.auth-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.auth-intro {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.auth-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-card label {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.auth-card input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.auth-card button {
+    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    background: #222;
+    color: white;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.auth-card button:hover {
+    background: #444;
+}
+
+.auth-footer {
+    margin-top: 25px;
+    color: #666;
+}
+
+.auth-footer a {
+    color: #222;
+    font-weight: bold;
+}
+
+
+/* Customer dashboard */
+
+.dashboard-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.dashboard-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 40px;
+}
+
+.dashboard-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.dashboard-intro {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.account-info {
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+    margin-bottom: 25px;
+}
+
+.account-info p {
+    margin: 10px 0;
+    color: #555;
+}
+
+/* Admin dashboard */
+
+.admin-dashboard {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.admin-dashboard-header {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.admin-dashboard-header h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.admin-dashboard-header p {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.statistics {
+    margin-bottom: 40px;
+}
+
+.statistics h2,
+.management h2 {
+    margin-bottom: 20px;
+}
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.stat-card h3 {
+    margin-top: 0;
+    font-size: 16px;
+    color: #666;
+}
+
+.stat-card p {
+    margin-bottom: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.management-card {
+    display: block;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    color: #222;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.management-card:hover {
+    background: #f0f0f0;
+}
+
+/* Admin ebook actions */
+
+.admin-book-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.admin-book-actions .button {
+    margin-top: 0;
+}
+
+.delete-link {
+    display: inline-block;
+    padding: 10px 16px;
+    background: #b00020;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.delete-link:hover {
+    background: #8a0019;
+}
+
+/* Admin form pages */
+
+.admin-form-page {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.admin-form-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 40px;
+}
+
+.admin-form-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.admin-form-intro {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.admin-form-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-form-card label {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.admin-form-card input,
+.admin-form-card textarea,
+.admin-form-card select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.admin-form-card textarea {
+    resize: vertical;
+}
+
+.admin-form-card button {
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    background: #222;
+    color: white;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.admin-form-card button:hover {
+    background: #444;
+}
+
+.admin-form-card .back-link {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+/* Admin categories page */
+
+.admin-categories-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.category-form-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 35px;
+}
+
+.category-form-card h3 {
+    margin-top: 0;
+}
+
+.category-form-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.category-form-row input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.category-form-row button {
+    padding: 12px 16px;
+    border: none;
+    background: #222;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.category-form-row button:hover {
+    background: #444;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.category-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    font-weight: bold;
+}
+
+.empty-admin-page {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Admin orders page */
+
+.admin-orders-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.admin-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-order-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.admin-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-order-header h3 {
+    margin: 0;
+}
+
+.admin-order-info {
+    margin: 20px 0;
+}
+
+.admin-order-info p {
+    color: #555;
+}
+
+.admin-order-card .button {
+    margin-top: 5px;
+}
+
+.admin-orders-page .back-link {
+    display: inline-block;
+    margin-top: 25px;
+}
+
+/* Admin order details page */
+
+.admin-order-details-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.admin-order-details-header {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-order-details-header h2 {
+    margin: 0 0 10px 0;
+}
+
+.admin-order-details-header p {
+    color: #666;
+    margin: 0;
+}
+
+.admin-order-customer,
+.admin-order-status {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.admin-order-customer h2,
+.admin-order-status h2,
+.admin-ordered-books h2 {
+    margin-top: 0;
+}
+
+.admin-order-customer p {
+    color: #555;
+}
+
+.admin-order-status form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-order-status label {
+    font-weight: bold;
+}
+
+.admin-order-status select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.admin-order-status button {
+    padding: 10px 16px;
+    border: none;
+    background: #222;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.admin-order-status button:hover {
+    background: #444;
+}
+
+.admin-ordered-books {
+    margin-top: 30px;
+}
+
+.admin-ordered-books-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-ordered-book {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.admin-ordered-book h3 {
+    margin-top: 0;
+}
+
+.admin-ordered-book p {
+    color: #555;
+}
+
+.admin-ordered-book-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #222 !important;
+}
+
+.admin-order-total {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-top: 25px;
+}
+
+.admin-order-total h2 {
+    margin: 0;
+}
+
+.admin-order-links {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+/* Admin customers page */
+
+.admin-customers-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.admin-customers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-customer-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.admin-customer-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.admin-customer-info {
+    margin: 20px 0;
+}
+
+.admin-customer-info p {
+    color: #555;
+}
+
+.admin-customer-card .button {
+    margin-top: 5px;
+}
+
+.admin-customers-page .back-link {
+    display: inline-block;
+    margin-top: 25px;
+}
+
+/* Admin customer details page */
+
+.admin-customer-details-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.admin-customer-details-header {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.admin-customer-details-header h2 {
+    margin: 0 0 10px 0;
+}
+
+.admin-customer-details-header p {
+    color: #666;
+    margin: 0;
+}
+
+.admin-customer-info-card,
+.admin-customer-account {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.admin-customer-info-card h2,
+.admin-customer-orders h2,
+.admin-customer-account h2 {
+    margin-top: 0;
+}
+
+.admin-customer-info-card p {
+    color: #555;
+}
+
+.admin-customer-orders {
+    margin-bottom: 30px;
+}
+
+.admin-customer-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-customer-order-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.admin-customer-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-customer-order-header h3 {
+    margin: 0;
+}
+
+.admin-customer-order-info {
+    margin: 20px 0;
+}
+
+.admin-customer-order-info p {
+    color: #555;
+}
+
+.admin-customer-order-card .button {
+    margin-top: 5px;
+}
+
+.admin-customer-account-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-customer-account-actions .button {
+    margin-top: 0;
+}
+
+.admin-customer-details-links {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+
+/* Admin payments page */
+
+.admin-payments-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.admin-payments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-payment-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.admin-payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-payment-header h3 {
+    margin: 0;
+}
+
+.payment-status {
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+.admin-payment-info {
+    margin-top: 20px;
+}
+
+.admin-payment-info p {
+    color: #555;
+}
+
+.admin-payment-amount {
+    font-size: 18px;
+}
+
+.admin-payment-amount strong {
+    color: #222;
+}
+
+.admin-payments-page .back-link {
+    display: inline-block;
+    margin-top: 25px;
+}
+

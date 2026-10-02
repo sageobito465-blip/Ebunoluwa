@@ -34,42 +34,80 @@
 
 {% block content %}
 
-    <h2>My Orders</h2>
+    <section class="orders-page">
 
-    {% if orders %}
+        <h2>My Orders</h2>
 
-        {% for order in orders %}
+        {% if orders %}
 
-            <h3>
-                <a href="{{ url_for('order_details', order_id=order[0]) }}">
-                    Order #{{ order[0] }}
+            <div class="orders-list">
+
+                {% for order in orders %}
+
+                    <article class="order-card">
+
+                        <div class="order-header">
+
+                            <h3>
+                                <a href="{{ url_for('order_details', order_id=order[0]) }}">
+                                    Order #{{ order[0] }}
+                                </a>
+                            </h3>
+
+                            <span class="order-status">
+                                {{ order[2] }}
+                            </span>
+
+                        </div>
+
+                        <div class="order-info">
+
+                            <p>
+                                <strong>Total:</strong>
+                                ₦{{ order[1] }}
+                            </p>
+
+                            <p>
+                                <strong>Date:</strong>
+                                {{ order[3] }}
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for('order_details', order_id=order[0]) }}"
+                            class="button"
+                        >
+                            View Order
+                        </a>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-orders">
+
+                <h3>No orders yet</h3>
+
+                <p>
+                    Your orders will appear here after you place an order.
+                </p>
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="button"
+                >
+                    Browse Ebooks
                 </a>
-            </h3>
 
-            <p>
-                <strong>Total:</strong>
-                ₦{{ order[1] }}
-            </p>
+            </div>
 
-            <p>
-                <strong>Status:</strong>
-                {{ order[2] }}
-            </p>
+        {% endif %}
 
-            <p>
-                <strong>Date:</strong>
-                {{ order[3] }}
-            </p>
-
-            <hr>
-
-        {% endfor %}
-
-    {% else %}
-
-        <p>You have no orders yet.</p>
-
-    {% endif %}
+    </section>
 
 {% endblock %}
-

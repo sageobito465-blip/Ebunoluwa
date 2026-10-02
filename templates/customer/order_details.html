@@ -34,60 +34,91 @@
 
 {% block content %}
 
-    <h2>Order #{{ order[0] }}</h2>
+    <section class="order-details-page">
 
-    <p>
-        <strong>Status:</strong>
-        {{ order[2] }}
-    </p>
+        <div class="order-details-header">
 
-    <p>
-        <strong>Date:</strong>
-        {{ order[3] }}
-    </p>
+            <h2>Order #{{ order[0] }}</h2>
 
-    <h2>Books</h2>
+            <span class="order-status">
+                {{ order[2] }}
+            </span>
 
-    {% for item in items %}
+        </div>
 
-        <h3>{{ item[0] }}</h3>
-
-        <p>
-            <strong>Author:</strong>
-            {{ item[1] }}
+        <p class="order-date">
+            <strong>Date:</strong>
+            {{ order[3] }}
         </p>
 
-        <p>
-            <strong>Price:</strong>
-            ₦{{ item[2] }}
-        </p>
+        <section class="ordered-books">
 
-        <p>
-            <strong>Quantity:</strong>
-            {{ item[3] }}
-        </p>
+            <h2>Books</h2>
 
-    {% endfor %}
+            {% for item in items %}
 
-    <h2>Total: ₦{{ order[1] }}</h2>
+                <article class="ordered-book">
 
-    {% if order[2] == "Pending" %}
+                    <div>
 
-        <form method="POST" action="{{ url_for('pay_order', order_id=order[0]) }}">
+                        <h3>{{ item[0] }}</h3>
 
-            <button type="submit">
-                Pay Now
-            </button>
+                        <p>
+                            <strong>Author:</strong>
+                            {{ item[1] }}
+                        </p>
 
-        </form>
+                        <p>
+                            <strong>Quantity:</strong>
+                            {{ item[3] }}
+                        </p>
 
-    {% endif %}
+                    </div>
 
-    <br>
+                    <p class="ordered-book-price">
+                        ₦{{ item[2] }}
+                    </p>
 
-    <a href="{{ url_for('customer_orders') }}">
-        Back to My Orders
-    </a>
+                </article>
+
+            {% endfor %}
+
+        </section>
+
+        <div class="order-total">
+
+            <h2>
+                Total: ₦{{ order[1] }}
+            </h2>
+
+            {% if order[2] == "Pending" %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for('pay_order', order_id=order[0]) }}"
+                >
+
+                    <button
+                        type="submit"
+                        class="button"
+                    >
+                        Pay Now
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+        <a
+            href="{{ url_for('customer_orders') }}"
+            class="back-link"
+        >
+            Back to My Orders
+        </a>
+
+    </section>
 
 {% endblock %}
 

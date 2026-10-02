@@ -34,18 +34,40 @@
 
 {% block content %}
 
-    <h2>Welcome, {{ user[0] }}!</h2>
+    <section class="dashboard-page">
 
-    <p>
-        <strong>Email:</strong>
-        {{ user[1] }}
-    </p>
+        <div class="dashboard-card">
 
-    <p>You are logged in successfully.</p>
+            <h2>Welcome, {{ user[0] }}!</h2>
 
-    <a href="{{ url_for('home') }}">
-        Browse Ebooks
-    </a>
+            <p class="dashboard-intro">
+                Welcome to your ebook shop account.
+            </p>
+
+            <div class="account-info">
+
+                <p>
+                    <strong>Email:</strong>
+                    {{ user[1] }}
+                </p>
+
+                <p>
+                    <strong>Account:</strong>
+                    Customer
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('home') }}"
+                class="button"
+            >
+                Browse Ebooks
+            </a>
+
+        </div>
+
+    </section>
 
 {% endblock %}
 

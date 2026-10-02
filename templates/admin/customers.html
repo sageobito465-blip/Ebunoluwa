@@ -42,41 +42,87 @@
 
 {% block content %}
 
-    <h2>Manage Customers</h2>
+    <section class="admin-customers-page">
 
-    {% if customers %}
+        <div class="admin-page-header">
 
-        {% for customer in customers %}
+            <div>
 
-            <h3>{{ customer[1] }}</h3>
+                <h2>Manage Customers</h2>
 
-            <p>
-                <strong>Email:</strong>
-                {{ customer[2] }}
-            </p>
+                <p>
+                    View and manage customer accounts.
+                </p>
 
-            <p>
-                <strong>Account Created:</strong>
-                {{ customer[4] }}
-            </p>
+            </div>
 
-            <a href="{{ url_for('admin_customer_details', customer_id=customer[0]) }}">
-                View Customer
-            </a>
+        </div>
 
-            <hr>
+        {% if customers %}
 
-        {% endfor %}
+            <div class="admin-customers-list">
 
-    {% else %}
+                {% for customer in customers %}
 
-        <p>No customers found.</p>
+                    <article class="admin-customer-card">
 
-    {% endif %}
+                        <div class="admin-customer-header">
 
-    <a href="{{ url_for('admin_dashboard') }}">
-        Back to Dashboard
-    </a>
+                            <h3>
+                                {{ customer[1] }}
+                            </h3>
+
+                        </div>
+
+                        <div class="admin-customer-info">
+
+                            <p>
+                                <strong>Email:</strong>
+                                {{ customer[2] }}
+                            </p>
+
+                            <p>
+                                <strong>Account Created:</strong>
+                                {{ customer[4] }}
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="{{ url_for('admin_customer_details', customer_id=customer[0]) }}"
+                            class="button"
+                        >
+                            View Customer
+                        </a>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-admin-page">
+
+                <h3>No customers found.</h3>
+
+                <p>
+                    Customer accounts will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="back-link"
+        >
+            Back to Dashboard
+        </a>
+
+    </section>
 
 {% endblock %}
 

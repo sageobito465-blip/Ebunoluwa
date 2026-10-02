@@ -34,36 +34,70 @@
 
 {% block content %}
 
-    <h2>My Library</h2>
+    <section class="library-page">
 
-    {% if books %}
+        <h2>My Library</h2>
 
-        {% for book in books %}
+        <p class="library-intro">
+            Your purchased ebooks are available here.
+        </p>
 
-            <h3>{{ book[1] }}</h3>
+        {% if books %}
 
-            <p>
-                <strong>Author:</strong>
-                {{ book[2] }}
-            </p>
+            <div class="library-grid">
 
-            <a href="{{ url_for('download_ebook', book_id=book[0]) }}">
-                Download Ebook
-            </a>
+                {% for book in books %}
 
-            <hr>
+                    <article class="library-card">
 
-        {% endfor %}
+                        <div class="library-card-content">
 
-    {% else %}
+                            <h3>
+                                {{ book[1] }}
+                            </h3>
 
-        <p>Your library is empty.</p>
+                            <p>
+                                <strong>Author:</strong>
+                                {{ book[2] }}
+                            </p>
 
-        <a href="{{ url_for('home') }}">
-            Browse Ebooks
-        </a>
+                            <a
+                                href="{{ url_for('download_ebook', book_id=book[0]) }}"
+                                class="button"
+                            >
+                                Download Ebook
+                            </a>
 
-    {% endif %}
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-library">
+
+                <h3>Your library is empty</h3>
+
+                <p>
+                    Purchase an ebook and it will appear here.
+                </p>
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="button"
+                >
+                    Browse Ebooks
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
 
 {% endblock %}
 

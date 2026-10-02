@@ -226,7 +226,7 @@ def customer_dashboard():
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -264,7 +264,7 @@ def add_to_cart(book_id):
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -325,7 +325,7 @@ def cart():
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -370,7 +370,7 @@ def remove_from_cart(cart_id):
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -400,7 +400,7 @@ def update_cart(cart_id):
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Get the new quantity from the form
     quantity = request.form["quantity"]
@@ -434,7 +434,7 @@ def checkout():
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -484,7 +484,7 @@ def place_order():
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -561,7 +561,7 @@ def customer_orders():
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -600,7 +600,7 @@ def order_details(order_id):
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -661,7 +661,7 @@ def pay_order(order_id):
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Get the Paystack secret key
     secret_key = os.getenv("PAYSTACK_SECRET_KEY")
@@ -874,7 +874,7 @@ def customer_library():
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -923,7 +923,7 @@ def download_ebook(book_id):
 
     # Check if the customer is logged in
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     # Connect to the database
     connection = get_connection()
@@ -973,7 +973,7 @@ def admin_dashboard():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1045,7 +1045,7 @@ def manage_categories():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1092,7 +1092,7 @@ def add_category():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1142,7 +1142,7 @@ def admin_orders():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1197,7 +1197,7 @@ def admin_payments():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1257,7 +1257,7 @@ def admin_customers():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1310,7 +1310,7 @@ def admin_customer_details(customer_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1380,7 +1380,7 @@ def edit_customer(customer_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1468,7 +1468,7 @@ def delete_customer(customer_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1539,7 +1539,7 @@ def admin_order_details(order_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1617,7 +1617,7 @@ def update_order_status(order_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1698,8 +1698,6 @@ def update_order_status(order_id):
     )
 
 
-
-
 # Manage ebooks
 @app.route("/admin/books")
 def manage_books():
@@ -1707,7 +1705,7 @@ def manage_books():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1762,7 +1760,7 @@ def add_book():
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -1904,7 +1902,7 @@ def edit_book(book_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -2004,7 +2002,7 @@ def delete_book(book_id):
     user_id = session.get("user_id")
 
     if user_id is None:
-        return "Please login first", 401
+        return redirect(url_for("login"))
 
     connection = get_connection()
     cursor = connection.cursor()

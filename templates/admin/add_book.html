@@ -42,92 +42,129 @@
 
 {% block content %}
 
-    <h2>Add New Ebook</h2>
+    <section class="admin-form-page">
 
-    <form method="POST" enctype="multipart/form-data">
+        <div class="admin-form-card">
 
-        <label>Title:</label>
-        <input type="text" name="title" required>
+            <h2>Add New Ebook</h2>
 
-        <br><br>
+            <p class="admin-form-intro">
+                Add a new ebook to the shop.
+            </p>
 
-        <label>Author:</label>
-        <input type="text" name="author" required>
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+            >
 
-        <br><br>
+                <label for="title">
+                    Title
+                </label>
 
-        <label>Description:</label>
-        <br>
+                <input
+                    id="title"
+                    type="text"
+                    name="title"
+                    required
+                >
 
-        <textarea
-            name="description"
-            rows="5"
-            cols="40"
-        ></textarea>
+                <label for="author">
+                    Author
+                </label>
 
-        <br><br>
+                <input
+                    id="author"
+                    type="text"
+                    name="author"
+                    required
+                >
 
-        <label>Category:</label>
+                <label for="description">
+                    Description
+                </label>
 
-        <select name="category_id" required>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                ></textarea>
 
-            <option value="">
-                Select Category
-            </option>
+                <label for="category">
+                    Category
+                </label>
 
-            {% for category in categories %}
+                <select
+                    id="category"
+                    name="category_id"
+                    required
+                >
 
-                <option value="{{ category[0] }}">
-                    {{ category[1] }}
-                </option>
+                    <option value="">
+                        Select Category
+                    </option>
 
-            {% endfor %}
+                    {% for category in categories %}
 
-        </select>
+                        <option value="{{ category[0] }}">
+                            {{ category[1] }}
+                        </option>
 
-        <br><br>
+                    {% endfor %}
 
-        <label>Price:</label>
-        <input
-            type="number"
-            name="price"
-            step="0.01"
-            min="0"
-            required
-        >
+                </select>
 
-        <br><br>
+                <label for="price">
+                    Price
+                </label>
 
-        <label>Cover Image:</label>
-        <input
-            type="file"
-            name="cover_image"
-            accept="image/*"
-        >
+                <input
+                    id="price"
+                    type="number"
+                    name="price"
+                    step="0.01"
+                    min="0"
+                    required
+                >
 
-        <br><br>
+                <label for="cover_image">
+                    Cover Image
+                </label>
 
-        <label>Ebook PDF:</label>
-        <input
-            type="file"
-            name="ebook_file"
-            accept=".pdf"
-            required
-        >
+                <input
+                    id="cover_image"
+                    type="file"
+                    name="cover_image"
+                    accept="image/*"
+                >
 
-        <br><br>
+                <label for="ebook_file">
+                    Ebook PDF
+                </label>
 
-        <button type="submit">
-            Upload Ebook
-        </button>
+                <input
+                    id="ebook_file"
+                    type="file"
+                    name="ebook_file"
+                    accept=".pdf"
+                    required
+                >
 
-    </form>
+                <button type="submit">
+                    Upload Ebook
+                </button>
 
-    <br>
+            </form>
 
-    <a href="{{ url_for('manage_books') }}">
-        Back to Ebooks
-    </a>
+            <a
+                href="{{ url_for('manage_books') }}"
+                class="back-link"
+            >
+                Back to Ebooks
+            </a>
+
+        </div>
+
+    </section>
 
 {% endblock %}
 

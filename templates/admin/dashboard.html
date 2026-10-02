@@ -42,68 +42,93 @@
 
 {% block content %}
 
-    <h2>Admin Dashboard</h2>
+    <section class="admin-dashboard">
 
-    <p>
-        Welcome, Administrator!
-    </p>
+        <div class="admin-dashboard-header">
 
-    <h2>Statistics</h2>
+            <h2>Admin Dashboard</h2>
 
-    <p>
-        <strong>Total Ebooks:</strong>
-        {{ total_books }}
-    </p>
+            <p>
+                Welcome, Administrator!
+            </p>
 
-    <p>
-        <strong>Total Customers:</strong>
-        {{ total_customers }}
-    </p>
+        </div>
 
-    <p>
-        <strong>Total Orders:</strong>
-        {{ total_orders }}
-    </p>
+        <section class="statistics">
 
-    <p>
-        <strong>Total Revenue:</strong>
-        ₦{{ total_revenue }}
-    </p>
+            <h2>Statistics</h2>
 
-    <h2>Management</h2>
+            <div class="statistics-grid">
 
-    <ul>
+                <div class="stat-card">
+                    <h3>Total Ebooks</h3>
+                    <p>{{ total_books }}</p>
+                </div>
 
-        <li>
-            <a href="{{ url_for('manage_books') }}">
-                Ebooks
-            </a>
-        </li>
+                <div class="stat-card">
+                    <h3>Total Customers</h3>
+                    <p>{{ total_customers }}</p>
+                </div>
 
-        <li>
-            <a href="{{ url_for('manage_categories') }}">
-                Categories
-            </a>
-        </li>
+                <div class="stat-card">
+                    <h3>Total Orders</h3>
+                    <p>{{ total_orders }}</p>
+                </div>
 
-        <li>
-            <a href="{{ url_for('admin_orders') }}">
-                Orders
-            </a>
-        </li>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <p>₦{{ total_revenue }}</p>
+                </div>
 
-        <li>
-            <a href="{{ url_for('admin_customers') }}">
-                Customers
-            </a>
-        </li>
+            </div>
 
-        <li>
-            <a href="{{ url_for('admin_payments') }}">
-                Payments
-            </a>
-        </li>
+        </section>
 
-    </ul>
+        <section class="management">
+
+            <h2>Management</h2>
+
+            <div class="management-grid">
+
+                <a
+                    href="{{ url_for('manage_books') }}"
+                    class="management-card"
+                >
+                    Ebooks
+                </a>
+
+                <a
+                    href="{{ url_for('manage_categories') }}"
+                    class="management-card"
+                >
+                    Categories
+                </a>
+
+                <a
+                    href="{{ url_for('admin_orders') }}"
+                    class="management-card"
+                >
+                    Orders
+                </a>
+
+                <a
+                    href="{{ url_for('admin_customers') }}"
+                    class="management-card"
+                >
+                    Customers
+                </a>
+
+                <a
+                    href="{{ url_for('admin_payments') }}"
+                    class="management-card"
+                >
+                    Payments
+                </a>
+
+            </div>
+
+        </section>
+
+    </section>
 
 {% endblock %}

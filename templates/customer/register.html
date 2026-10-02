@@ -26,55 +26,68 @@
 
 {% block content %}
 
-    <h2>Customer Registration</h2>
+    <section class="auth-page">
 
-    <form method="POST">
+        <div class="auth-card">
 
-        <label>Name:</label>
+            <h2>Customer Registration</h2>
 
-        <input
-            type="text"
-            name="name"
-            required
-        >
+            <p class="auth-intro">
+                Create your ebook shop account.
+            </p>
 
-        <br><br>
+            <form method="POST">
 
-        <label>Email:</label>
+                <label for="name">
+                    Name
+                </label>
 
-        <input
-            type="email"
-            name="email"
-            required
-        >
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    required
+                >
 
-        <br><br>
+                <label for="email">
+                    Email
+                </label>
 
-        <label>Password:</label>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    required
+                >
 
-        <input
-            type="password"
-            name="password"
-            required
-        >
+                <label for="password">
+                    Password
+                </label>
 
-        <br><br>
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    required
+                >
 
-        <button type="submit">
-            Register
-        </button>
+                <button type="submit">
+                    Register
+                </button>
 
-    </form>
+            </form>
 
-    <br>
+            <p class="auth-footer">
+                Already have an account?
 
-    <p>
-        Already have an account?
+                <a href="{{ url_for('login') }}">
+                    Login here
+                </a>
+            </p>
 
-        <a href="{{ url_for('login') }}">
-            Login here
-        </a>
-    </p>
+        </div>
+
+    </section>
 
 {% endblock %}
 

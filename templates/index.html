@@ -48,41 +48,79 @@
 
 {% block content %}
 
-    <h2>Categories</h2>
+    <section class="hero">
 
-    <ul>
+        <h2>Discover Your Next Ebook</h2>
 
-        {% for category in categories %}
+        <p>
+            Explore our collection of ebooks and find something new to read.
+        </p>
 
-            <li>
-                {{ category[0] }}
-            </li>
+    </section>
 
-        {% endfor %}
+    <section class="categories">
 
-    </ul>
+        <h2>Browse Categories</h2>
 
-    <h2>Books</h2>
+        <div class="category-list">
 
-    <ul>
+            {% for category in categories %}
 
-        {% for book in books %}
+                <span class="category-item">
+                    {{ category[0] }}
+                </span>
 
-            <li>
+            {% endfor %}
 
-                <a href="{{ url_for('book_details', book_id=book[0]) }}">
-                    {{ book[1] }}
-                </a>
+        </div>
 
-                - {{ book[2] }}
-                - {{ book[4] }}
-                - ₦{{ book[3] }}
+    </section>
 
-            </li>
+    <section class="ebooks">
 
-        {% endfor %}
+        <h2>Available Ebooks</h2>
 
-    </ul>
+        <div class="ebook-grid">
+
+            {% for book in books %}
+
+                <article class="ebook-card">
+
+                    <div class="ebook-card-content">
+
+                        <h3>
+                            {{ book[1] }}
+                        </h3>
+
+                        <p>
+                            <strong>Author:</strong>
+                            {{ book[2] }}
+                        </p>
+
+                        <p>
+                            <strong>Category:</strong>
+                            {{ book[4] }}
+                        </p>
+
+                        <p class="ebook-price">
+                            ₦{{ book[3] }}
+                        </p>
+
+                        <a
+                            href="{{ url_for('book_details', book_id=book[0]) }}"
+                            class="button"
+                        >
+                            View Details
+                        </a>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
 
 {% endblock %}
-

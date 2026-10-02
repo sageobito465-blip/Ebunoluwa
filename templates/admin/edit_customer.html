@@ -42,42 +42,57 @@
 
 {% block content %}
 
-    <h2>Edit Customer</h2>
+    <section class="admin-form-page">
 
-    <form method="POST">
+        <div class="admin-form-card">
 
-        <label>Name:</label>
+            <h2>Edit Customer</h2>
 
-        <input
-            type="text"
-            name="name"
-            value="{{ customer[1] }}"
-            required
-        >
+            <p class="admin-form-intro">
+                Update the customer information below.
+            </p>
 
-        <br>
+            <form method="POST">
 
-        <label>Email:</label>
+                <label for="name">
+                    Name
+                </label>
 
-        <input
-            type="email"
-            name="email"
-            value="{{ customer[2] }}"
-            required
-        >
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    value="{{ customer[1] }}"
+                    required
+                >
 
-        <br>
+                <label for="email">
+                    Email
+                </label>
 
-        <button type="submit">
-            Save Changes
-        </button>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ customer[2] }}"
+                    required
+                >
 
-    </form>
+                <button type="submit">
+                    Save Changes
+                </button>
 
-    <br>
+            </form>
 
-    <a href="{{ url_for('admin_customer_details', customer_id=customer[0]) }}">
-        Cancel
-    </a>
+            <a
+                href="{{ url_for('admin_customer_details', customer_id=customer[0]) }}"
+                class="back-link"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </section>
 
 {% endblock %}
