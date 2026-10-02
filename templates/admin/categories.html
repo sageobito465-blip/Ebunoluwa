@@ -1,34 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Manage Categories</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Manage Categories</h1>
+{% block title %}
+    Manage Categories
+{% endblock %}
 
-    <h2>Add Category</h2>
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Manage Categories</h2>
+
+    <h3>Add Category</h3>
 
     <form method="POST" action="{{ url_for('add_category') }}">
 
         <label>Category Name:</label>
-        <input type="text" name="name" required>
 
-        <button type="submit">Add Category</button>
+        <input
+            type="text"
+            name="name"
+            required
+        >
+
+        <button type="submit">
+            Add Category
+        </button>
 
     </form>
 
-    <h2>Existing Categories</h2>
+    <h3>Existing Categories</h3>
 
     {% if categories %}
 
         <ul>
+
             {% for category in categories %}
 
-                <li>{{ category[1] }}</li>
+                <li>
+                    {{ category[1] }}
+                </li>
 
             {% endfor %}
+
         </ul>
 
     {% else %}
@@ -37,5 +84,4 @@
 
     {% endif %}
 
-</body>
-</html>
+{% endblock %}

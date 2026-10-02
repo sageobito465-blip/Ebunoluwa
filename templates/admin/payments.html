@@ -1,18 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Manage Payments</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Manage Payments</h1>
+{% block title %}
+    Manage Payments
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Manage Payments</h2>
 
     {% if payments %}
 
         {% for payment in payments %}
 
-            <h2>Payment #{{ payment[0] }}</h2>
+            <h3>Payment #{{ payment[0] }}</h3>
 
             <p>
                 <strong>Order ID:</strong>
@@ -63,6 +99,4 @@
         Back to Dashboard
     </a>
 
-</body>
-</html>
-
+{% endblock %}

@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from werkzeug.utils import secure_filename
 
+import pymysql
 import os
 import requests
 import uuid
@@ -16,6 +17,15 @@ app = Flask(__name__)
 # Secret key for sessions
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
+# Check allowed ebook file types
+ALLOWED_EBOOK_EXTENSIONS = {"pdf"}
+
+
+def allowed_ebook(filename):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EBOOK_EXTENSIONS
+    )
 
 # Home page
 @app.route("/")
@@ -117,21 +127,35 @@ def register():
         connection = get_connection()
         cursor = connection.cursor()
 
-        cursor.execute("""
-            INSERT INTO users (name, email, password, role)
-            VALUES (%s, %s, %s, %s)
-        """, (name, email, hashed_password, "Customer"))
+        try:
+            cursor.execute("""
+                INSERT INTO users (name, email, password, role)
+                VALUES (%s, %s, %s, %s)
+            """, (name, email, hashed_password, "Customer"))
 
-        connection.commit()
+            connection.commit()
 
-        # Close the database connection
-        cursor.close()
-        connection.close()
+            return "Registration successful!"
 
-        return "Registration successful!"
+        except pymysql.err.IntegrityError as error:
+
+            connection.rollback()
+
+            # Check if the email already exists
+            if error.args[0] == 1062:
+                return "An account with this email already exists. Please use another email."
+
+            raise
+
+        finally:
+            # Close the database connection
+            cursor.close()
+            connection.close()
 
     # Show the registration page
     return render_template("customer/register.html")
+
+
 
 
 # Customer login
@@ -1636,6 +1660,25 @@ def update_order_status(order_id):
         connection.close()
         return "Invalid order status", 400
 
+    # Paid orders must have a successful payment
+    if status == "Paid":
+
+        cursor.execute("""
+            SELECT id
+            FROM payments
+            WHERE order_id = %s
+            AND status = 'Success'
+        """, (order_id,))
+
+        payment = cursor.fetchone()
+
+        if payment is None:
+            cursor.close()
+            connection.close()
+            return "This order cannot be marked as Paid without a successful payment", 400
+
+
+
     cursor.execute("""
         UPDATE orders
         SET status = %s
@@ -1764,10 +1807,29 @@ def add_book():
         cover_image = request.files.get("cover_image")
         ebook_file = request.files.get("ebook_file")
 
+        
         if ebook_file is None or ebook_file.filename == "":
             return "Ebook PDF is required", 400
 
+        # Check that the ebook is a PDF
+        if not allowed_ebook(ebook_file.filename):
+            return "Only PDF ebook files are allowed", 400
+
+        # Check that the file content is actually a PDF
+        ebook_file.seek(0)
+        file_signature = ebook_file.read(4)
+        ebook_file.seek(0)
+
+        if file_signature != b"%PDF":
+            return "The uploaded file is not a valid PDF", 400
+
         ebook_filename = secure_filename(ebook_file.filename)
+
+        # Give the ebook a unique filename
+        ebook_filename = f"{uuid.uuid4()}_{ebook_filename}"
+
+
+
 
         if cover_image and cover_image.filename:
             cover_filename = secure_filename(cover_image.filename)

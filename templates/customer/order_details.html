@@ -1,12 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Order Details</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Order #{{ order[0] }}</h1>
+{% block title %}
+    Order Details
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('cart') }}">
+            Cart
+        </a>
+
+        <a href="{{ url_for('customer_orders') }}">
+            My Orders
+        </a>
+
+        <a href="{{ url_for('customer_library') }}">
+            My Library
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Order #{{ order[0] }}</h2>
 
     <p>
         <strong>Status:</strong>
@@ -33,6 +61,7 @@
             <strong>Price:</strong>
             ₦{{ item[2] }}
         </p>
+
         <p>
             <strong>Quantity:</strong>
             {{ item[3] }}
@@ -41,15 +70,24 @@
     {% endfor %}
 
     <h2>Total: ₦{{ order[1] }}</h2>
+
     {% if order[2] == "Pending" %}
 
         <form method="POST" action="{{ url_for('pay_order', order_id=order[0]) }}">
 
-            <button type="submit">Pay Now</button>
+            <button type="submit">
+                Pay Now
+            </button>
 
         </form>
 
     {% endif %}
 
-</body>
-</html>
+    <br>
+
+    <a href="{{ url_for('customer_orders') }}">
+        Back to My Orders
+    </a>
+
+{% endblock %}
+

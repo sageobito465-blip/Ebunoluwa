@@ -1,14 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Admin Dashboard</h1>
+{% block title %}
+    Admin Dashboard
+{% endblock %}
 
-    <p>Welcome, Administrator!</p>
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Admin Dashboard</h2>
+
+    <p>
+        Welcome, Administrator!
+    </p>
 
     <h2>Statistics</h2>
 
@@ -32,38 +70,40 @@
         ₦{{ total_revenue }}
     </p>
 
-
-
     <h2>Management</h2>
 
     <ul>
+
         <li>
             <a href="{{ url_for('manage_books') }}">
                 Ebooks
             </a>
         </li>
+
         <li>
             <a href="{{ url_for('manage_categories') }}">
                 Categories
             </a>
         </li>
+
         <li>
             <a href="{{ url_for('admin_orders') }}">
                 Orders
             </a>
         </li>
+
         <li>
             <a href="{{ url_for('admin_customers') }}">
                 Customers
             </a>
         </li>
+
         <li>
             <a href="{{ url_for('admin_payments') }}">
                 Payments
             </a>
         </li>
-    </ul>
-    
 
-</body>
-</html> 
+    </ul>
+
+{% endblock %}

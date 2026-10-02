@@ -1,26 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Manage Ebooks</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Manage Ebooks</h1>
+{% block title %}
+    Manage Ebooks
+{% endblock %}
 
-    <h2>Upload Ebook</h2>
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Manage Ebooks</h2>
+
+    <h3>Upload Ebook</h3>
 
     <a href="{{ url_for('add_book') }}">
         Add New Ebook
     </a>
 
-    <h2>Existing Ebooks</h2>
+    <h3>Existing Ebooks</h3>
 
     {% if books %}
 
         {% for book in books %}
 
-            <h3>{{ book[1] }}</h3>
+            <h4>{{ book[1] }}</h4>
 
             <p>
                 <strong>Author:</strong>
@@ -36,6 +72,7 @@
                 <strong>Price:</strong>
                 ₦{{ book[3] }}
             </p>
+
             <a href="{{ url_for('edit_book', book_id=book[0]) }}">
                 Edit Ebook
             </a>
@@ -46,6 +83,8 @@
                 Delete Ebook
             </a>
 
+            <hr>
+
         {% endfor %}
 
     {% else %}
@@ -54,5 +93,5 @@
 
     {% endif %}
 
-</body>
-</html>
+{% endblock %}
+

@@ -1,18 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Manage Orders</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Manage Orders</h1>
+{% block title %}
+    Manage Orders
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Manage Orders</h2>
 
     {% if orders %}
 
         {% for order in orders %}
 
-            <h2>Order #{{ order[0] }}</h2>
+            <h3>Order #{{ order[0] }}</h3>
 
             <p>
                 <strong>Customer:</strong>
@@ -39,8 +75,8 @@
                 {{ order[5] }}
             </p>
 
-            <a href="{{ url_for('admin_order_details', order_id=order[0]) }}"> 
-                View Order 
+            <a href="{{ url_for('admin_order_details', order_id=order[0]) }}">
+                View Order
             </a>
 
             <hr>
@@ -57,5 +93,5 @@
         Back to Dashboard
     </a>
 
-</body>
-</html>
+{% endblock %}
+

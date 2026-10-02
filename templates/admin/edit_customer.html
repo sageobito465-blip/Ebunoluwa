@@ -1,16 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Customer</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Edit Customer</h1>
+{% block title %}
+    Edit Customer
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Edit Customer</h2>
 
     <form method="POST">
 
         <label>Name:</label>
+
         <input
             type="text"
             name="name"
@@ -21,6 +58,7 @@
         <br>
 
         <label>Email:</label>
+
         <input
             type="email"
             name="email"
@@ -42,5 +80,4 @@
         Cancel
     </a>
 
-</body>
-</html>
+{% endblock %}

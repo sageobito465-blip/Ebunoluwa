@@ -1,12 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Order Details</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Order Details</h1>
+{% block title %}
+    Order Details
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
 
     <h2>Order #{{ order[0] }}</h2>
 
@@ -29,7 +63,7 @@
         <strong>Status:</strong>
         {{ order[4] }}
     </p>
-    
+
     <form
         method="POST"
         action="{{ url_for('update_order_status', order_id=order[0]) }}"
@@ -39,19 +73,22 @@
 
         <select name="status">
 
-            <option value="Pending"
+            <option
+                value="Pending"
                 {% if order[4] == "Pending" %}selected{% endif %}
             >
                 Pending
             </option>
 
-            <option value="Paid"
+            <option
+                value="Paid"
                 {% if order[4] == "Paid" %}selected{% endif %}
             >
                 Paid
             </option>
 
-            <option value="Cancelled"
+            <option
+                value="Cancelled"
                 {% if order[4] == "Cancelled" %}selected{% endif %}
             >
                 Cancelled
@@ -64,8 +101,6 @@
         </button>
 
     </form>
-
-
 
     <p>
         <strong>Date:</strong>
@@ -123,6 +158,5 @@
         Back to Dashboard
     </a>
 
-</body>
-</html>
+{% endblock %}
 

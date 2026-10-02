@@ -1,18 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Library</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>My Library</h1>
+{% block title %}
+    My Library
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('cart') }}">
+            Cart
+        </a>
+
+        <a href="{{ url_for('customer_orders') }}">
+            My Orders
+        </a>
+
+        <a href="{{ url_for('customer_library') }}">
+            My Library
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>My Library</h2>
 
     {% if books %}
 
         {% for book in books %}
 
-            <h2>{{ book[1] }}</h2>
+            <h3>{{ book[1] }}</h3>
 
             <p>
                 <strong>Author:</strong>
@@ -23,6 +51,7 @@
                 Download Ebook
             </a>
 
+            <hr>
 
         {% endfor %}
 
@@ -30,7 +59,11 @@
 
         <p>Your library is empty.</p>
 
+        <a href="{{ url_for('home') }}">
+            Browse Ebooks
+        </a>
+
     {% endif %}
 
-</body>
-</html>
+{% endblock %}
+

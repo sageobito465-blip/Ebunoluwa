@@ -1,22 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Orders</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>My Orders</h1>
+{% block title %}
+    My Orders
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('cart') }}">
+            Cart
+        </a>
+
+        <a href="{{ url_for('customer_orders') }}">
+            My Orders
+        </a>
+
+        <a href="{{ url_for('customer_library') }}">
+            My Library
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>My Orders</h2>
 
     {% if orders %}
 
         {% for order in orders %}
 
-            <h2>
+            <h3>
                 <a href="{{ url_for('order_details', order_id=order[0]) }}">
                     Order #{{ order[0] }}
                 </a>
-            </h2>
+            </h3>
 
             <p>
                 <strong>Total:</strong>
@@ -33,6 +61,8 @@
                 {{ order[3] }}
             </p>
 
+            <hr>
+
         {% endfor %}
 
     {% else %}
@@ -41,5 +71,5 @@
 
     {% endif %}
 
-</body>
-</html>
+{% endblock %}
+

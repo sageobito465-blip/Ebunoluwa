@@ -1,16 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Ebook</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>Edit Ebook</h1>
+{% block title %}
+    Edit Ebook
+{% endblock %}
+
+{% block navigation %}
+
+    <nav>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('manage_books') }}">
+            Ebooks
+        </a>
+
+        <a href="{{ url_for('manage_categories') }}">
+            Categories
+        </a>
+
+        <a href="{{ url_for('admin_orders') }}">
+            Orders
+        </a>
+
+        <a href="{{ url_for('admin_customers') }}">
+            Customers
+        </a>
+
+        <a href="{{ url_for('admin_payments') }}">
+            Payments
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Edit Ebook</h2>
 
     <form method="POST">
 
         <label>Title:</label>
+
         <input
             type="text"
             name="title"
@@ -21,6 +58,7 @@
         <br><br>
 
         <label>Author:</label>
+
         <input
             type="text"
             name="author"
@@ -32,6 +70,7 @@
 
         <label>Description:</label>
         <br>
+
         <textarea
             name="description"
             rows="5"
@@ -60,6 +99,7 @@
         <br><br>
 
         <label>Price:</label>
+
         <input
             type="number"
             name="price"
@@ -83,5 +123,5 @@
         Back to Ebooks
     </a>
 
-</body>
-</html>
+{% endblock %}
+
