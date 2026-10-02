@@ -313,7 +313,7 @@ def add_to_cart(book_id):
     cursor.close()
     connection.close()
 
-    return message
+    return render_template( "customer/cart_added.html", message=message)
 
 
 # Customer cart

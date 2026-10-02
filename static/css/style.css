@@ -1257,3 +1257,32 @@ footer {
     margin-top: 25px;
 }
 
+/* Cart confirmation */
+.cart-message {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 40px;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.cart-message h2 {
+    margin-bottom: 30px;
+}
+
+.cart-message a {
+    display: inline-block;
+    margin: 5px;
+    padding: 12px 20px;
+    background: #222;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.cart-message a:hover {
+    background: #444;
+}
+
