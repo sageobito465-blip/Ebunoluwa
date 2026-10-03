@@ -1,3 +1,9 @@
 venv/
+.venv/
 .env
+.env.*
+!.env.example
 __pycache__/
+*.py[cod]
+static/uploads/ebooks/*
+static/uploads/covers/*

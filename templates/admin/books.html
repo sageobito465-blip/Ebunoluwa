@@ -32,9 +32,10 @@
             Payments
         </a>
 
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
+        <form method="POST" action="{{ url_for('logout') }}" class="nav-logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="nav-link-button">Logout</button>
+        </form>
 
     </nav>
 
@@ -102,12 +103,10 @@
                                     Edit Ebook
                                 </a>
 
-                                <a
-                                    href="{{ url_for('delete_book', book_id=book[0]) }}"
-                                    class="delete-link"
-                                >
-                                    Delete Ebook
-                                </a>
+                                <form method="POST" action="{{ url_for('delete_book', book_id=book[0]) }}" class="delete-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="delete-link">Delete Ebook</button>
+                                </form>
 
                             </div>
 

@@ -32,9 +32,10 @@
             Payments
         </a>
 
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
+        <form method="POST" action="{{ url_for('logout') }}" class="nav-logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="nav-link-button">Logout</button>
+        </form>
 
     </nav>
 
@@ -56,6 +57,7 @@
                 method="POST"
                 enctype="multipart/form-data"
             >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <label for="title">
                     Title
@@ -134,7 +136,7 @@
                     id="cover_image"
                     type="file"
                     name="cover_image"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png,.gif,.webp"
                 >
 
                 <label for="ebook_file">
@@ -167,4 +169,3 @@
     </section>
 
 {% endblock %}
-

@@ -24,9 +24,10 @@
             My Library
         </a>
 
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
+        <form method="POST" action="{{ url_for('logout') }}" class="nav-logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="nav-link-button">Logout</button>
+        </form>
 
     </nav>
 
@@ -67,6 +68,7 @@
                                 method="POST"
                                 action="{{ url_for('update_cart', cart_id=item[0]) }}"
                             >
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <label for="quantity-{{ item[0] }}">
                                     Quantity
@@ -87,12 +89,10 @@
 
                             </form>
 
-                            <a
-                                href="{{ url_for('remove_from_cart', cart_id=item[0]) }}"
-                                class="remove-link"
-                            >
-                                Remove
-                            </a>
+                            <form method="POST" action="{{ url_for('remove_from_cart', cart_id=item[0]) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="remove-link">Remove</button>
+                            </form>
 
                         </div>
 

@@ -24,9 +24,10 @@
             My Library
         </a>
 
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
+        <form method="POST" action="{{ url_for('logout') }}" class="nav-logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="nav-link-button">Logout</button>
+        </form>
 
     </nav>
 
@@ -62,12 +63,10 @@
                 ₦{{ book[4] }}
             </p>
 
-            <a
-                href="{{ url_for('add_to_cart', book_id=book[0]) }}"
-                class="button"
-            >
-                Add to Cart
-            </a>
+            <form method="POST" action="{{ url_for('add_to_cart', book_id=book[0]) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="button">Add to Cart</button>
+            </form>
 
             <br>
 

@@ -36,7 +36,14 @@
                 Login to access your ebook account.
             </p>
 
+            {% if request.args.get('registered') %}
+                <p class="form-message">
+                    Your account was created. You can now log in.
+                </p>
+            {% endif %}
+
             <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <label for="email">
                     Email
@@ -79,4 +86,3 @@
     </section>
 
 {% endblock %}
-

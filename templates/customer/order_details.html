@@ -24,9 +24,10 @@
             My Library
         </a>
 
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
+        <form method="POST" action="{{ url_for('logout') }}" class="nav-logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="nav-link-button">Logout</button>
+        </form>
 
     </nav>
 
@@ -97,6 +98,7 @@
                     method="POST"
                     action="{{ url_for('pay_order', order_id=order[0]) }}"
                 >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <button
                         type="submit"

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
+from flask_wtf.csrf import CSRFError, CSRFProtect
 
 from database import get_connection
 
@@ -10,22 +11,81 @@ import pymysql
 import os
 import requests
 import uuid
+import posixpath
+from urllib.parse import quote
 
 
 app = Flask(__name__)
 
-# Secret key for sessions
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError("FLASK_SECRET_KEY must be configured")
+
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = os.getenv(
+    "SESSION_COOKIE_SECURE", "false"
+).lower() in {"1", "true", "yes"}
+
+csrf = CSRFProtect(app)
 
 # Check allowed ebook file types
 ALLOWED_EBOOK_EXTENSIONS = {"pdf"}
+ALLOWED_COVER_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
 
 
 def allowed_ebook(filename):
     return (
-        "." in filename
+        bool(filename)
+        and "." in filename
         and filename.rsplit(".", 1)[1].lower() in ALLOWED_EBOOK_EXTENSIONS
     )
+
+
+def allowed_cover(filename):
+    return (
+        bool(filename)
+        and "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_COVER_EXTENSIONS
+    )
+
+
+def valid_cover_signature(file_storage):
+    file_storage.seek(0)
+    signature = file_storage.read(12)
+    file_storage.seek(0)
+    extension = file_storage.filename.rsplit(".", 1)[-1].lower()
+
+    if extension in {"jpg", "jpeg"}:
+        return signature.startswith(b"\xff\xd8\xff")
+    if extension == "png":
+        return signature.startswith(b"\x89PNG\r\n\x1a\n")
+    if extension == "gif":
+        return signature.startswith((b"GIF87a", b"GIF89a"))
+    if extension == "webp":
+        return signature.startswith(b"RIFF") and signature[8:12] == b"WEBP"
+    return False
+
+
+def error_response(message, status_code):
+    return render_template("error.html", message=message), status_code
+
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(error):
+    return render_template(
+        "error.html",
+        message="Your form session expired or was invalid. Please try again.",
+    ), 400
+
+
+@app.before_request
+def protect_ebook_static_files():
+    if request.endpoint == "static":
+        filename = (request.view_args or {}).get("filename", "")
+        normalized_filename = posixpath.normpath("/" + filename).lstrip("/")
+        if normalized_filename.startswith("uploads/ebooks/"):
+            return "Not found", 404
 
 # Home page
 @app.route("/")
@@ -96,7 +156,7 @@ def book_details(book_id):
     if book is None:
         cursor.close()
         connection.close()
-        return "Book not found", 404
+        return error_response("Book not found.", 404)
 
     # Close the database connection
     cursor.close()
@@ -116,9 +176,12 @@ def register():
     if request.method == "POST":
 
         # Get data from the form
-        name = request.form["name"]
-        email = request.form["email"]
-        password = request.form["password"]
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+
+        if not name or not email or not password:
+            return error_response("Name, email, and password are required.", 400)
 
         # Hash the password
         hashed_password = generate_password_hash(password)
@@ -135,7 +198,7 @@ def register():
 
             connection.commit()
 
-            return "Registration successful!"
+            return redirect(url_for("login", registered="1"))
 
         except pymysql.err.IntegrityError as error:
 
@@ -143,7 +206,10 @@ def register():
 
             # Check if the email already exists
             if error.args[0] == 1062:
-                return "An account with this email already exists. Please use another email."
+                return error_response(
+                    "An account with this email already exists. Please use another email.",
+                    409,
+                )
 
             raise
 
@@ -166,8 +232,8 @@ def login():
     if request.method == "POST":
 
         # Get data from the form
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
 
         # Connect to the database
         connection = get_connection()
@@ -188,7 +254,7 @@ def login():
 
         # Check if the customer exists
         if user is None:
-            return "Invalid email or password", 401
+            return error_response("Invalid email or password.", 401)
 
         # Check the password
         if check_password_hash(user[3], password):
@@ -200,7 +266,7 @@ def login():
 
             return redirect(url_for("customer_dashboard"))
 
-        return "Invalid email or password", 401
+        return error_response("Invalid email or password.", 401)
 
     # Show the login page
     return render_template("customer/login.html")
@@ -208,13 +274,13 @@ def login():
 
 
 # Customer logout
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
 
     # Remove the user ID from the session
     session.pop("user_id", None)
 
-    return "You have been logged out"
+    return redirect(url_for("home"))
 
 
 # Customer dashboard
@@ -247,7 +313,7 @@ def customer_dashboard():
 
     # Check if the user exists
     if user is None:
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     return render_template(
         "customer/dashboard.html",
@@ -256,7 +322,7 @@ def customer_dashboard():
 
 
 # Add book to cart
-@app.route("/cart/add/<int:book_id>")
+@app.route("/cart/add/<int:book_id>", methods=["POST"])
 def add_to_cart(book_id):
 
     # Get the user ID from the session
@@ -283,7 +349,7 @@ def add_to_cart(book_id):
     if book is None:
         cursor.close()
         connection.close()
-        return "Book not found", 404
+        return error_response("Book not found.", 404)
 
     # Check if the book is already in the cart
     cursor.execute("""
@@ -362,7 +428,7 @@ def cart():
 
 
 # Remove book from cart
-@app.route("/cart/remove/<int:cart_id>")
+@app.route("/cart/remove/<int:cart_id>", methods=["POST"])
 def remove_from_cart(cart_id):
 
     # Get the user ID from the session
@@ -403,7 +469,13 @@ def update_cart(cart_id):
         return redirect(url_for("login"))
 
     # Get the new quantity from the form
-    quantity = request.form["quantity"]
+    try:
+        quantity = int(request.form.get("quantity", ""))
+    except ValueError:
+        return error_response("Enter a valid quantity.", 400)
+
+    if quantity < 1:
+        return error_response("Quantity must be at least 1.", 400)
 
     # Connect to the database
     connection = get_connection()
@@ -459,7 +531,7 @@ def checkout():
     if not cart_items:
         cursor.close()
         connection.close()
-        return "Your cart is empty", 400
+        return error_response("Your cart is empty.", 400)
 
     # Calculate the total
     total = sum(item[2] * item[3] for item in cart_items)
@@ -508,7 +580,7 @@ def place_order():
     if not cart_items:
         cursor.close()
         connection.close()
-        return "Your cart is empty", 400
+        return error_response("Your cart is empty.", 400)
 
     # Calculate the order total
     total = sum(item[1] * item[2] for item in cart_items)
@@ -549,7 +621,7 @@ def place_order():
     cursor.close()
     connection.close()
 
-    return f"Order placed successfully! Order ID: {order_id}"
+    return redirect(url_for("order_details", order_id=order_id))
 
 
 # Customer orders
@@ -624,7 +696,7 @@ def order_details(order_id):
     if order is None:
         cursor.close()
         connection.close()
-        return "Order not found", 404
+        return error_response("Order not found.", 404)
 
     # Get the books in the order
     cursor.execute("""
@@ -665,6 +737,8 @@ def pay_order(order_id):
 
     # Get the Paystack secret key
     secret_key = os.getenv("PAYSTACK_SECRET_KEY")
+    if not secret_key:
+        return error_response("Payment service is not configured.", 503)
 
     # Connect to the database
     connection = get_connection()
@@ -690,13 +764,13 @@ def pay_order(order_id):
     if order is None:
         cursor.close()
         connection.close()
-        return "Order not found", 404
+        return error_response("Order not found.", 404)
 
     # Check if the order has already been paid
     if order[2] == "Paid":
         cursor.close()
         connection.close()
-        return "This order has already been paid"
+        return error_response("This order has already been paid.", 400)
 
     # Create a unique payment reference
     reference = f"ORDER-{order_id}-{uuid.uuid4().hex[:10]}"
@@ -721,20 +795,30 @@ def pay_order(order_id):
     }
 
     # Send the payment request to Paystack
-    response = requests.post(
-        "https://api.paystack.co/transaction/initialize",
-        headers=headers,
-        json=data
-    )
-
-    # Convert Paystack response to JSON
-    result = response.json()
-
-    # Check if Paystack accepted the request
-    if not result.get("status"):
+    try:
+        response = requests.post(
+            "https://api.paystack.co/transaction/initialize",
+            headers=headers,
+            json=data,
+            timeout=15,
+        )
+        result = response.json()
+    except (requests.RequestException, ValueError):
         cursor.close()
         connection.close()
-        return "Unable to initialize payment", 500
+        return error_response("Unable to contact the payment service.", 502)
+
+    # Check if Paystack accepted the request
+    if not isinstance(result, dict) or not result.get("status"):
+        cursor.close()
+        connection.close()
+        return error_response("Unable to initialize payment.", 502)
+
+    authorization_url = (result.get("data") or {}).get("authorization_url")
+    if not authorization_url:
+        cursor.close()
+        connection.close()
+        return error_response("The payment service returned an invalid response.", 502)
 
     # Save the payment record
     cursor.execute("""
@@ -755,8 +839,6 @@ def pay_order(order_id):
     connection.close()
 
     # Send the customer to Paystack checkout
-    authorization_url = result["data"]["authorization_url"]
-
     return redirect(authorization_url)
 
 
@@ -769,34 +851,38 @@ def payment_callback():
 
     # Check if a reference was provided
     if reference is None:
-        return "Payment reference missing", 400
+        return error_response("Payment reference missing.", 400)
 
     # Get the Paystack secret key
     secret_key = os.getenv("PAYSTACK_SECRET_KEY")
+    if not secret_key:
+        return error_response("Payment service is not configured.", 503)
 
     # Verify the transaction with Paystack
     headers = {
         "Authorization": f"Bearer {secret_key}"
     }
 
-    response = requests.get(
-        f"https://api.paystack.co/transaction/verify/{reference}",
-        headers=headers
-    )
-
-    # Convert Paystack response to JSON
-    result = response.json()
+    try:
+        response = requests.get(
+            "https://api.paystack.co/transaction/verify/" + quote(reference, safe=""),
+            headers=headers,
+            timeout=15,
+        )
+        result = response.json()
+    except (requests.RequestException, ValueError):
+        return error_response("Unable to contact the payment service.", 502)
 
     # Check if verification was successful
-    if not result.get("status"):
-        return "Payment verification failed", 400
+    if not isinstance(result, dict) or not result.get("status"):
+        return error_response("Payment verification failed.", 400)
 
     # Get transaction information
-    transaction = result["data"]
+    transaction = result.get("data")
 
     # Check the payment status
-    if transaction["status"] != "success":
-        return "Payment was not successful", 400
+    if not isinstance(transaction, dict) or transaction.get("status") != "success":
+        return error_response("Payment was not successful.", 400)
 
     # Connect to the database
     connection = get_connection()
@@ -815,7 +901,16 @@ def payment_callback():
     if payment is None:
         cursor.close()
         connection.close()
-        return "Payment record not found", 404
+        return error_response("Payment record not found.", 404)
+
+    # Verify that the Paystack amount matches our order amount
+    if (
+        transaction.get("reference") != reference
+        or transaction.get("amount") != int(payment[1] * 100)
+    ):
+        cursor.close()
+        connection.close()
+        return error_response("Payment details did not match this order.", 400)
 
     # Check if the payment has already been processed
     if payment[2] == "Success":
@@ -828,12 +923,6 @@ def payment_callback():
                 order_id=payment[0]
             )
         )
-
-    # Verify that the Paystack amount matches our order amount
-    if transaction["amount"] != int(payment[1] * 100):
-        cursor.close()
-        connection.close()
-        return "Payment amount mismatch", 400
 
     # Mark the payment as successful
     cursor.execute("""
@@ -951,7 +1040,7 @@ def download_ebook(book_id):
 
     # Check if the customer owns the ebook
     if book is None:
-        return "You do not own this ebook", 403
+        return error_response("You do not own this ebook.", 403)
 
     ebook_directory = os.path.join(
         app.root_path,
@@ -989,12 +1078,12 @@ def admin_dashboard():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT COUNT(*)
@@ -1061,12 +1150,12 @@ def manage_categories():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT id, name
@@ -1108,26 +1197,34 @@ def add_category():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     name = request.form["name"].strip()
 
     if not name:
         cursor.close()
         connection.close()
-        return "Category name is required", 400
+        return error_response("Category name is required.", 400)
 
-    cursor.execute("""
-        INSERT INTO categories (name)
-        VALUES (%s)
-    """, (name,))
+    try:
+        cursor.execute("""
+            INSERT INTO categories (name)
+            VALUES (%s)
+        """, (name,))
 
-    connection.commit()
+        connection.commit()
+    except pymysql.err.IntegrityError as error:
+        connection.rollback()
+        cursor.close()
+        connection.close()
+        if error.args[0] == 1062:
+            return error_response("A category with that name already exists.", 409)
+        raise
 
     cursor.close()
     connection.close()
@@ -1158,12 +1255,12 @@ def admin_orders():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1213,12 +1310,12 @@ def admin_payments():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1273,12 +1370,12 @@ def admin_customers():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1326,12 +1423,12 @@ def admin_customer_details(customer_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1349,7 +1446,7 @@ def admin_customer_details(customer_id):
     if customer is None:
         cursor.close()
         connection.close()
-        return "Customer not found", 404
+        return error_response("Customer not found.", 404)
 
     cursor.execute("""
         SELECT
@@ -1396,12 +1493,12 @@ def edit_customer(customer_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1418,7 +1515,7 @@ def edit_customer(customer_id):
     if customer is None:
         cursor.close()
         connection.close()
-        return "Customer not found", 404
+        return error_response("Customer not found.", 404)
 
     if request.method == "POST":
 
@@ -1428,17 +1525,25 @@ def edit_customer(customer_id):
         if not name or not email:
             cursor.close()
             connection.close()
-            return "Name and email are required", 400
+            return error_response("Name and email are required.", 400)
 
-        cursor.execute("""
-            UPDATE users
-            SET name = %s,
-                email = %s
-            WHERE id = %s
-            AND role = %s
-        """, (name, email, customer_id, "Customer"))
+        try:
+            cursor.execute("""
+                UPDATE users
+                SET name = %s,
+                    email = %s
+                WHERE id = %s
+                AND role = %s
+            """, (name, email, customer_id, "Customer"))
 
-        connection.commit()
+            connection.commit()
+        except pymysql.err.IntegrityError as error:
+            connection.rollback()
+            cursor.close()
+            connection.close()
+            if error.args[0] == 1062:
+                return error_response("An account with this email already exists.", 409)
+            raise
 
         cursor.close()
         connection.close()
@@ -1462,7 +1567,7 @@ def edit_customer(customer_id):
 
 
 # Delete customer
-@app.route("/admin/customers/delete/<int:customer_id>")
+@app.route("/admin/customers/delete/<int:customer_id>", methods=["POST"])
 def delete_customer(customer_id):
 
     user_id = session.get("user_id")
@@ -1484,12 +1589,12 @@ def delete_customer(customer_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT id
@@ -1503,7 +1608,7 @@ def delete_customer(customer_id):
     if customer is None:
         cursor.close()
         connection.close()
-        return "Customer not found", 404
+        return error_response("Customer not found.", 404)
 
     cursor.execute("""
         SELECT id
@@ -1517,7 +1622,9 @@ def delete_customer(customer_id):
     if order is not None:
         cursor.close()
         connection.close()
-        return "This customer cannot be deleted because they have orders", 400
+        return error_response(
+            "This customer cannot be deleted because they have orders.", 400
+        )
 
     cursor.execute("""
         DELETE FROM users
@@ -1555,12 +1662,12 @@ def admin_order_details(order_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1582,7 +1689,7 @@ def admin_order_details(order_id):
     if order is None:
         cursor.close()
         connection.close()
-        return "Order not found", 404
+        return error_response("Order not found.", 404)
 
     cursor.execute("""
         SELECT
@@ -1633,12 +1740,12 @@ def update_order_status(order_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT id
@@ -1651,14 +1758,14 @@ def update_order_status(order_id):
     if order is None:
         cursor.close()
         connection.close()
-        return "Order not found", 404
+        return error_response("Order not found.", 404)
 
     status = request.form["status"]
 
     if status not in ["Pending", "Paid", "Cancelled"]:
         cursor.close()
         connection.close()
-        return "Invalid order status", 400
+        return error_response("Invalid order status.", 400)
 
     # Paid orders must have a successful payment
     if status == "Paid":
@@ -1675,7 +1782,10 @@ def update_order_status(order_id):
         if payment is None:
             cursor.close()
             connection.close()
-            return "This order cannot be marked as Paid without a successful payment", 400
+            return error_response(
+                "This order cannot be marked as Paid without a successful payment.",
+                400,
+            )
 
 
 
@@ -1721,12 +1831,12 @@ def manage_books():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1776,12 +1886,12 @@ def add_book():
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT id, name
@@ -1807,11 +1917,11 @@ def add_book():
 
         
         if ebook_file is None or ebook_file.filename == "":
-            return "Ebook PDF is required", 400
+            return error_response("Ebook PDF is required.", 400)
 
         # Check that the ebook is a PDF
         if not allowed_ebook(ebook_file.filename):
-            return "Only PDF ebook files are allowed", 400
+            return error_response("Only PDF ebook files are allowed.", 400)
 
         # Check that the file content is actually a PDF
         ebook_file.seek(0)
@@ -1819,18 +1929,31 @@ def add_book():
         ebook_file.seek(0)
 
         if file_signature != b"%PDF":
-            return "The uploaded file is not a valid PDF", 400
+            return error_response("The uploaded file is not a valid PDF.", 400)
 
         ebook_filename = secure_filename(ebook_file.filename)
+        if not ebook_filename:
+            return error_response("The ebook filename is invalid.", 400)
 
         # Give the ebook a unique filename
-        ebook_filename = f"{uuid.uuid4()}_{ebook_filename}"
+        ebook_filename = f"{uuid.uuid4()}_{ebook_filename[:180]}"
 
 
 
 
         if cover_image and cover_image.filename:
+            if not allowed_cover(cover_image.filename):
+                return error_response(
+                    "Cover images must be JPG, PNG, GIF, or WebP files.", 400
+                )
+
+            if not valid_cover_signature(cover_image):
+                return error_response("The uploaded cover is not a valid image.", 400)
+
             cover_filename = secure_filename(cover_image.filename)
+            if not cover_filename:
+                return error_response("The cover filename is invalid.", 400)
+            cover_filename = f"{uuid.uuid4()}_{cover_filename[:180]}"
         else:
             cover_filename = None
 
@@ -1847,6 +1970,9 @@ def add_book():
             "uploads",
             "covers"
         )
+
+        os.makedirs(ebook_directory, exist_ok=True)
+        os.makedirs(cover_directory, exist_ok=True)
 
         ebook_file.save(
             os.path.join(ebook_directory, ebook_filename)
@@ -1918,12 +2044,12 @@ def edit_book(book_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT
@@ -1942,7 +2068,7 @@ def edit_book(book_id):
     if book is None:
         cursor.close()
         connection.close()
-        return "Ebook not found", 404
+        return error_response("Ebook not found.", 404)
 
     cursor.execute("""
         SELECT id, name
@@ -1996,7 +2122,7 @@ def edit_book(book_id):
 
 
 # Delete ebook
-@app.route("/admin/books/delete/<int:book_id>")
+@app.route("/admin/books/delete/<int:book_id>", methods=["POST"])
 def delete_book(book_id):
 
     user_id = session.get("user_id")
@@ -2018,12 +2144,12 @@ def delete_book(book_id):
     if user is None:
         cursor.close()
         connection.close()
-        return "User not found", 404
+        return error_response("User not found.", 404)
 
     if user[0] != "Admin":
         cursor.close()
         connection.close()
-        return "Access denied", 403
+        return error_response("Access denied.", 403)
 
     cursor.execute("""
         SELECT ebook_file, cover_image
@@ -2046,13 +2172,13 @@ def delete_book(book_id):
     if purchased is not None:
         cursor.close()
         connection.close()
-        return "This ebook cannot be deleted because it has been purchased", 400
+        return error_response("This ebook cannot be deleted because it has been purchased.", 400)
 
     # Check if the ebook exists
     if book is None:
         cursor.close()
         connection.close()
-        return "Ebook not found", 404
+        return error_response("Ebook not found.", 404)
 
     cursor.execute("""
         DELETE FROM books
@@ -2071,12 +2197,10 @@ def delete_book(book_id):
         "ebooks"
     )
 
-    ebook_path = os.path.join(
-        ebook_directory,
-        book[0]
-    )
+    safe_ebook_filename = secure_filename(book[0])
+    ebook_path = os.path.join(ebook_directory, safe_ebook_filename)
 
-    if os.path.exists(ebook_path):
+    if safe_ebook_filename and os.path.isfile(ebook_path):
         os.remove(ebook_path)
 
     if book[1]:
@@ -2088,17 +2212,15 @@ def delete_book(book_id):
             "covers"
         )
 
-        cover_path = os.path.join(
-            cover_directory,
-            book[1]
-        )
+        safe_cover_filename = secure_filename(book[1])
+        cover_path = os.path.join(cover_directory, safe_cover_filename)
 
-        if os.path.exists(cover_path):
+        if safe_cover_filename and os.path.isfile(cover_path):
             os.remove(cover_path)
 
     return redirect(url_for("manage_books"))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
+    debug = os.getenv("FLASK_DEBUG", "false").lower() in {"1", "true", "yes"}
+    app.run(debug=debug)
