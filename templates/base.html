@@ -21,30 +21,41 @@
 
 <body>
 
-    <header>
+    <header class="site-header">
 
-        <h1>Ebook Shop</h1>
+        <div class="site-header-inner">
 
-        {% block navigation %}
-        {% endblock %}
+            <div class="brand-lockup">
+                <span class="brand-mark" aria-hidden="true">e</span>
+                <div>
+                    <h1>Ebook Shop</h1>
+                    <p>Find your next good read</p>
+                </div>
+            </div>
+
+            {% block navigation %}
+            {% endblock %}
+
+        </div>
 
     </header>
 
-    <main>
+    <main class="page-shell">
 
         {% block content %}
         {% endblock %}
 
     </main>
 
-    <footer>
+    <footer class="site-footer">
 
-        <p>
-            &copy; 2026 Ebook Shop
-        </p>
+        <div class="site-footer-inner">
+            <span class="footer-mark" aria-hidden="true">e</span>
+            <p>&copy; 2026 Ebook Shop</p>
+            <span>Made for readers</span>
+        </div>
 
     </footer>
 
 </body>
 </html>
-

@@ -6,7 +6,7 @@
 
 {% block navigation %}
 
-    <nav>
+    <nav class="site-nav admin-nav">
 
         <a href="{{ url_for('admin_dashboard') }}">
             Dashboard
@@ -75,6 +75,21 @@
                     {% for book in books %}
 
                         <article class="admin-book-card">
+
+                            {% if book[4] %}
+                                <img
+                                    class="admin-book-cover"
+                                    src="{{ url_for('static', filename='uploads/covers/' ~ book[4]) }}"
+                                    alt="Cover of {{ book[1] }}"
+                                >
+                            {% else %}
+                                <div class="ebook-cover admin-book-cover-placeholder" aria-hidden="true">
+                                    <span class="cover-kicker">DIGITAL EDITION</span>
+                                    <strong>{{ book[1] }}</strong>
+                                    <span class="cover-author">{{ book[2] }}</span>
+                                    <span class="cover-ornament"></span>
+                                </div>
+                            {% endif %}
 
                             <h3>
                                 {{ book[1] }}

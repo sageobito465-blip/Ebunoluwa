@@ -6,7 +6,7 @@
 
 {% block navigation %}
 
-    <nav>
+    <nav class="site-nav">
 
         <a href="{{ url_for('home') }}">
             Home
@@ -50,6 +50,21 @@
                 {% for book in books %}
 
                     <article class="library-card">
+
+                        {% if book[3] %}
+                            <img
+                                class="library-cover"
+                                src="{{ url_for('static', filename='uploads/covers/' ~ book[3]) }}"
+                                alt="Cover of {{ book[1] }}"
+                            >
+                        {% else %}
+                            <div class="ebook-cover library-cover-placeholder" aria-hidden="true">
+                                <span class="cover-kicker">DIGITAL EDITION</span>
+                                <strong>{{ book[1] }}</strong>
+                                <span class="cover-author">{{ book[2] }}</span>
+                                <span class="cover-ornament"></span>
+                            </div>
+                        {% endif %}
 
                         <div class="library-card-content">
 
@@ -101,4 +116,3 @@
     </section>
 
 {% endblock %}
-

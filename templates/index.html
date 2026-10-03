@@ -6,7 +6,7 @@
 
 {% block navigation %}
 
-    <nav>
+    <nav class="site-nav">
 
         <a href="{{ url_for('home') }}">
             Home
@@ -51,6 +51,8 @@
 
     <section class="hero">
 
+        <span class="eyebrow">A WORLD OF STORIES, ONE TAP AWAY</span>
+
         <h2>Discover Your Next Ebook</h2>
 
         <p>
@@ -86,6 +88,13 @@
             {% for book in books %}
 
                 <article class="ebook-card">
+
+                    <div class="ebook-cover" aria-hidden="true">
+                        <span class="cover-kicker">DIGITAL EDITION</span>
+                        <strong>{{ book[1] }}</strong>
+                        <span class="cover-author">{{ book[2] }}</span>
+                        <span class="cover-ornament"></span>
+                    </div>
 
                     <div class="ebook-card-content">
 

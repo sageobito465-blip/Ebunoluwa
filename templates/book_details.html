@@ -6,7 +6,7 @@
 
 {% block navigation %}
 
-    <nav>
+    <nav class="site-nav">
 
         <a href="{{ url_for('home') }}">
             Home
@@ -39,43 +39,49 @@
 
         <div class="book-info">
 
-            <p class="book-category">
-                {{ book[5] }}
-            </p>
-
-            <h2>{{ book[1] }}</h2>
-
-            <p class="book-author">
-                By {{ book[2] }}
-            </p>
-
-            <div class="book-description">
-
-                <h3>Description</h3>
-
-                <p>
-                    {{ book[3] }}
-                </p>
-
+            <div class="book-cover" aria-hidden="true">
+                <span class="cover-kicker">DIGITAL EDITION</span>
+                <span class="cover-ornament"></span>
+                <strong>{{ book[1] }}</strong>
+                <span class="cover-author">{{ book[2] }}</span>
             </div>
 
-            <p class="book-price">
-                ₦{{ book[4] }}
-            </p>
+            <div class="book-copy">
 
-            <form method="POST" action="{{ url_for('add_to_cart', book_id=book[0]) }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="button">Add to Cart</button>
-            </form>
+                <p class="book-category">
+                    {{ book[5] }}
+                </p>
 
-            <br>
+                <h2>{{ book[1] }}</h2>
 
-            <a
-                href="{{ url_for('home') }}"
-                class="back-link"
-            >
-                Back to Ebooks
-            </a>
+                <p class="book-author">
+                    By {{ book[2] }}
+                </p>
+
+                <div class="book-description">
+
+                    <h3>Description</h3>
+
+                    <p>
+                        {{ book[3] }}
+                    </p>
+
+                </div>
+
+                <p class="book-price">
+                    ₦{{ book[4] }}
+                </p>
+
+                <form method="POST" action="{{ url_for('add_to_cart', book_id=book[0]) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="button">Add to Cart</button>
+                </form>
+
+                <a href="{{ url_for('home') }}" class="back-link">
+                    Back to Ebooks
+                </a>
+
+            </div>
 
         </div>
 
