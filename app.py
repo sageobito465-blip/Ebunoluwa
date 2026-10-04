@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from werkzeug.utils import secure_filename
 
-import pymysql
+import psycopg
 import os
 import requests
 import uuid
@@ -200,7 +200,7 @@ def register():
 
             return redirect(url_for("login", registered="1"))
 
-        except pymysql.err.IntegrityError as error:
+        except psycopg.IntegrityError as error:
 
             connection.rollback()
 
@@ -589,10 +589,11 @@ def place_order():
     cursor.execute("""
         INSERT INTO orders (user_id, total_amount, status)
         VALUES (%s, %s, %s)
+        RETURNING id
     """, (user_id, total, "Pending"))
 
     # Get the new order ID
-    order_id = cursor.lastrowid
+    order_id = cursor.fetchone()[0]
 
     # Create the order items
     for item in cart_items:
@@ -621,7 +622,7 @@ def place_order():
     cursor.close()
     connection.close()
 
-    return redirect(url_for("order_details", order_id=order_id))
+    return redirect(url_for("checkout"))
 
 
 # Customer orders
@@ -1218,7 +1219,7 @@ def add_category():
         """, (name,))
 
         connection.commit()
-    except pymysql.err.IntegrityError as error:
+    except psycopg.IntegrityError as error:
         connection.rollback()
         cursor.close()
         connection.close()
@@ -1537,7 +1538,7 @@ def edit_customer(customer_id):
             """, (name, email, customer_id, "Customer"))
 
             connection.commit()
-        except pymysql.err.IntegrityError as error:
+        except psycopg.IntegrityError as error:
             connection.rollback()
             cursor.close()
             connection.close()

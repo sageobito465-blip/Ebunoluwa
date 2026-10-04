@@ -1,105 +1,145 @@
 # Ebook Shop
 
-A Flask and MariaDB application for selling ebooks, recording orders and payments, and managing the catalogue and customers.
+A Flask application for selling ebooks, recording orders and payments, and managing the catalogue and customers.
 
 ## Features
 
-- Customer registration, login, shopping cart, checkout, and order history
-- Paystack payment initialization and server-side payment verification
-- A customer library with downloads restricted to paid purchases
-- Admin pages for ebooks, categories, customers, orders, and payment records
-- PDF upload checks, optional cover-image validation, and CSRF protection
+* Customer registration, login, shopping cart, checkout, and order history
+* Paystack payment initialization and server-side payment verification
+* A customer library with downloads restricted to paid purchases
+* Admin pages for ebooks, categories, customers, orders, and payment records
+* PDF upload checks, optional cover-image validation, and CSRF protection
 
 ## Technology and project layout
 
-- `app.py` — Flask routes, authentication, checkout, payments, uploads, and downloads
-- `database.py` — MariaDB/MySQL connection setup using environment variables
-- `database/schema.sql` — database and table definitions
-- `templates/` — customer and admin Jinja templates
-- `static/css/` — application styling
-- `static/uploads/` — local ebook and cover files
-- `test_database.py` — database connectivity check
+* `app.py` — Flask routes, authentication, checkout, payments, uploads, and downloads
+* `database.py` — PostgreSQL/Neon database connection
+* `database/schema.sql` — PostgreSQL table definitions
+* `templates/` — customer and admin Jinja templates
+* `static/css/` — application styling
+* `static/uploads/` — ebook and cover files
+* `test_database.py` — database connectivity check
 
-The application uses Python 3.10 or newer, Flask, Flask-WTF, Werkzeug, PyMySQL, `python-dotenv`, and `requests`. Exact versions are recorded in `requirements.txt`.
-
-For the complete Windows procedure, see [WINDOWS_SETUP.md](WINDOWS_SETUP.md).
+The application uses Python 3.10 or newer, Flask, Flask-WTF, Werkzeug, psycopg, `python-dotenv`, `requests`, and Gunicorn. Exact versions are recorded in `requirements.txt`.
 
 ## Quick setup
 
-From the project directory in Windows PowerShell:
+Create and activate a virtual environment:
 
-```powershell
-py -3.11 -m venv .venv
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-Copy-Item .env.example .env
+```bash
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-Use any installed Python version supported by the packages if `py -3.11` is unavailable; Python 3.11 is the recommended example.
+Install the dependencies:
 
-Edit `.env` with a unique `FLASK_SECRET_KEY`, the MariaDB account details, and a Paystack test secret key. Never commit `.env` or share its values.
-
-Create the database and tables with the MariaDB client:
-
-```powershell
-Get-Content .\database\schema.sql | mariadb -u root -p
+```bash
+pip install -r requirements.txt
 ```
 
-The schema creates the `ebook_shop` database. The account in `.env` must have access to that database. The application uses the default MariaDB/MySQL TCP port, 3306; `DB_HOST=localhost` is suitable for a local Windows installation. If the client is named `mysql.exe` on that machine, substitute `mysql` for `mariadb` in the command.
+Create your environment file from the template:
 
-Start the application:
-
-```powershell
-python app.py
+```bash
+cp .env.example .env
 ```
 
-Open <http://127.0.0.1:5000/> in a browser. Check the database connection with:
+If you already have a `.env` file, do not run the copy command again. Edit your existing file instead.
 
-```powershell
-python test_database.py
-```
+Configure the following values in `.env`:
+
+* `FLASK_SECRET_KEY` — a strong, unique secret key
+* `DATABASE_URL` — your Neon PostgreSQL connection string
+* `PAYSTACK_SECRET_KEY` — your Paystack test or live secret key
+
+Never commit `.env` or share its values.
+
+## Database
+
+The application uses PostgreSQL. The production database is hosted on Neon.
+
+The schema in `database/schema.sql` creates these tables:
+
+* `users`
+* `categories`
+* `books`
+* `cart`
+* `orders`
+* `order_items`
+* `payments`
+
+The application connects using the `DATABASE_URL` environment variable.
 
 ## Environment variables
 
-- `FLASK_SECRET_KEY` — required random secret for sessions and CSRF tokens
-- `FLASK_DEBUG` — optional; set to `true`, `1`, or `yes` only for local development
-- `SESSION_COOKIE_SECURE` — leave `false` for local HTTP; set to `true` only behind HTTPS
-- `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` — MariaDB/MySQL connection settings
-- `PAYSTACK_SECRET_KEY` — Paystack test or live secret key; required for payment actions
+* `FLASK_SECRET_KEY` — required secret for sessions and CSRF tokens
+* `FLASK_DEBUG` — optional; set to `true`, `1`, or `yes` only for local development
+* `SESSION_COOKIE_SECURE` — use `false` for local HTTP; set to `true` when served over HTTPS
+* `DATABASE_URL` — PostgreSQL/Neon connection string
+* `PAYSTACK_SECRET_KEY` — Paystack test or live secret key
 
-`database.py` loads `.env` from the working directory. Run commands from the project root.
+`database.py` loads `.env` from the project directory. Run commands from the project root.
 
-## Database and admin setup
+## Running locally
 
-The schema preserves the relationships between users, categories, books, carts, orders, order items, and payments. `order_items.quantity` is included because the application stores and displays the quantity for each ordered book.
+Start the Flask development server:
 
-To create a separate application account, first run the schema as an administrative MariaDB user, then run SQL similar to the following with a strong password of your own:
-
-```sql
-CREATE USER 'ebook_app'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
-GRANT ALL PRIVILEGES ON ebook_shop.* TO 'ebook_app'@'localhost';
-FLUSH PRIVILEGES;
+```bash
+python app.py
 ```
 
-Set that account in `.env`. Register a normal account through the application, then have a trusted database administrator promote it if admin access is needed:
+Open:
 
-```sql
-UPDATE ebook_shop.users
-SET role = 'Admin'
-WHERE email = 'admin@example.com';
+```text
+http://127.0.0.1:5000/
 ```
 
-Do not rerun the schema against production data without reviewing the existing tables first. The SQL file is an initial schema, not a migration system.
+Check the database connection:
+
+```bash
+python test_database.py
+```
+
+## Production deployment
+
+The application can be served with Gunicorn:
+
+```bash
+gunicorn app:app
+```
+
+The current deployment architecture uses:
+
+* Render for the Flask web service
+* Neon for PostgreSQL
+* Paystack for payments
+
+Configure the required environment variables on your hosting platform.
+
+For production, use HTTPS and set:
+
+```text
+SESSION_COOKIE_SECURE=true
+FLASK_DEBUG=false
+```
 
 ## Paystack
 
-Put a Paystack test secret key in `PAYSTACK_SECRET_KEY` for local testing. The application initializes payments through Paystack and verifies the returned transaction server-side. For a deployed or live environment, use the public HTTPS application URL for the callback flow and set `SESSION_COOKIE_SECURE=true`.
+Use a Paystack test secret key in `PAYSTACK_SECRET_KEY` during development.
 
-## Windows notes
+The application initializes payments through Paystack and verifies the returned transaction server-side.
 
-- Do not copy or activate the repository's Unix-style `venv`; create a fresh `.venv` on Windows.
-- MariaDB must be running as a Windows service and listening on port 3306, unless the application code is extended to support another port.
-- Upload directories are created automatically when an admin uploads a book. Keep the database and `static/uploads/` files backed up together.
-- The development server is intended for local use, not production hosting.
+For deployment, ensure the payment callback uses your public HTTPS application URL.
+
+## File storage
+
+Ebooks and cover images are stored under `static/uploads/`.
+
+The application works with files included in the repository. Hosting platforms with ephemeral filesystems may require external storage for files uploaded after deployment.
+
+## Security
+
+* Never commit `.env`
+* Never expose database passwords or API secret keys
+* Use a strong `FLASK_SECRET_KEY`
+* Use Paystack test keys during development
+* Use HTTPS and secure session cookies in production
