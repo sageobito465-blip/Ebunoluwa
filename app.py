@@ -811,6 +811,7 @@ def pay_order(order_id):
 
     # Check if Paystack accepted the request
     if not isinstance(result, dict) or not result.get("status"):
+        print("Paystack response:", result)
         cursor.close()
         connection.close()
         return error_response("Unable to initialize payment.", 502)
