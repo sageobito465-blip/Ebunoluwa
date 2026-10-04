@@ -68,6 +68,7 @@ CREATE TABLE order_items (
     order_id INT NOT NULL,
     book_id INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
 
     FOREIGN KEY (order_id) REFERENCES orders(id)
         ON DELETE CASCADE

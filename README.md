@@ -6,73 +6,100 @@ A Flask and MariaDB application for selling ebooks, recording orders and payment
 
 - Customer registration, login, shopping cart, checkout, and order history
 - Paystack payment initialization and server-side payment verification
-- A customer library with downloads restricted to ebooks in that customer's paid orders
+- A customer library with downloads restricted to paid purchases
 - Admin pages for ebooks, categories, customers, orders, and payment records
-- PDF upload checks, optional cover image validation, and CSRF protection for form submissions
+- PDF upload checks, optional cover-image validation, and CSRF protection
 
-## Technologies
+## Technology and project layout
 
-Python, Flask, MariaDB/MySQL, PyMySQL, Flask-WTF, Werkzeug password hashing, HTML, and CSS. Paystack is used for payment processing.
-
-## Project structure
-
-- `app.py` — Flask routes, checkout, payment, uploads, and access checks
-- `database.py` — database connection configuration
+- `app.py` — Flask routes, authentication, checkout, payments, uploads, and downloads
+- `database.py` — MariaDB/MySQL connection setup using environment variables
 - `database/schema.sql` — database and table definitions
-- `templates/` — customer and admin pages
-- `static/css/style.css` — application styling
-- `static/uploads/` — uploaded ebook and cover files (local runtime data)
-- `test_database.py` — a basic database connection check
+- `templates/` — customer and admin Jinja templates
+- `static/css/` — application styling
+- `static/uploads/` — local ebook and cover files
+- `test_database.py` — database connectivity check
 
-## Setup
+The application uses Python 3.10 or newer, Flask, Flask-WTF, Werkzeug, PyMySQL, `python-dotenv`, and `requests`. Exact versions are recorded in `requirements.txt`.
 
-1. Create a MariaDB database and tables by running `database/schema.sql` with a database account that can create databases and tables.
-2. Create and activate a Python virtual environment, then install packages:
+For the complete Windows procedure, see [WINDOWS_SETUP.md](WINDOWS_SETUP.md).
 
-   ```sh
-   python -m venv .venv
-   . .venv/bin/activate
-   pip install -r requirements.txt
-   ```
+## Quick setup
 
-3. Copy `.env.example` to `.env` and set the database and application settings below. Generate a unique `FLASK_SECRET_KEY`; do not use the example placeholder.
-4. Start the application:
+From the project directory in Windows PowerShell:
 
-   ```sh
-   python app.py
-   ```
+```powershell
+py -3.11 -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
 
-   `FLASK_DEBUG` defaults to `false`. Set it to `true` only for local development. The app reads `.env` through `python-dotenv`.
+Use any installed Python version supported by the packages if `py -3.11` is unavailable; Python 3.11 is the recommended example.
+
+Edit `.env` with a unique `FLASK_SECRET_KEY`, the MariaDB account details, and a Paystack test secret key. Never commit `.env` or share its values.
+
+Create the database and tables with the MariaDB client:
+
+```powershell
+Get-Content .\database\schema.sql | mariadb -u root -p
+```
+
+The schema creates the `ebook_shop` database. The account in `.env` must have access to that database. The application uses the default MariaDB/MySQL TCP port, 3306; `DB_HOST=localhost` is suitable for a local Windows installation. If the client is named `mysql.exe` on that machine, substitute `mysql` for `mariadb` in the command.
+
+Start the application:
+
+```powershell
+python app.py
+```
+
+Open <http://127.0.0.1:5000/> in a browser. Check the database connection with:
+
+```powershell
+python test_database.py
+```
 
 ## Environment variables
 
-- `FLASK_SECRET_KEY` — required, random secret used to sign sessions and CSRF tokens
-- `FLASK_DEBUG` — optional; enables Flask debug mode only when set to `true`, `1`, or `yes`
-- `SESSION_COOKIE_SECURE` — set to `true` when serving the application over HTTPS; leave `false` for local HTTP development
+- `FLASK_SECRET_KEY` — required random secret for sessions and CSRF tokens
+- `FLASK_DEBUG` — optional; set to `true`, `1`, or `yes` only for local development
+- `SESSION_COOKIE_SECURE` — leave `false` for local HTTP; set to `true` only behind HTTPS
 - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` — MariaDB/MySQL connection settings
 - `PAYSTACK_SECRET_KEY` — Paystack test or live secret key; required for payment actions
 
-## Customer workflow
+`database.py` loads `.env` from the working directory. Run commands from the project root.
 
-Customers register and log in, browse ebook details, add ebooks to their cart, and place orders. An unpaid order can be paid through Paystack. After the callback, the app verifies the transaction with Paystack before marking the payment and order as successful. Paid purchases appear in the customer's library.
+## Database and admin setup
 
-## Admin workflow
+The schema preserves the relationships between users, categories, books, carts, orders, order items, and payments. `order_items.quantity` is included because the application stores and displays the quantity for each ordered book.
 
-Register an account, then have a trusted database administrator promote that account by setting its `users.role` to `Admin`. Admin users can manage the catalogue and categories, review orders and payment records, and view or edit customers. Customers cannot access these routes.
+To create a separate application account, first run the schema as an administrative MariaDB user, then run SQL similar to the following with a strong password of your own:
 
-## Paystack setup
+```sql
+CREATE USER 'ebook_app'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
+GRANT ALL PRIVILEGES ON ebook_shop.* TO 'ebook_app'@'localhost';
+FLUSH PRIVILEGES;
+```
 
-Configure `PAYSTACK_SECRET_KEY` with a key from the Paystack dashboard. Use test credentials for local development. Configure the deployed application's public HTTPS URL as the callback URL where required by your Paystack setup. A live payment cannot be verified using local placeholder credentials.
+Set that account in `.env`. Register a normal account through the application, then have a trusted database administrator promote it if admin access is needed:
 
-## Security and operations
+```sql
+UPDATE ebook_shop.users
+SET role = 'Admin'
+WHERE email = 'admin@example.com';
+```
 
-- Keep `.env` private and never commit real database, Flask, or Paystack secrets.
-- Enable HTTPS in deployment and set `SESSION_COOKIE_SECURE=true` there.
-- All state-changing application forms use CSRF tokens. Cart changes, deletions, and logout use POST requests.
-- Ebook files are kept out of direct static-file access. Downloads are served only after checking the signed-in customer's paid purchases.
-- Ebook uploads accept PDF extensions and check the PDF signature. Cover uploads accept common raster image types and check their file signatures.
-- Back up the database and the upload directories together. The SQL schema is not a migration system and should not be re-run against production data without review.
+Do not rerun the schema against production data without reviewing the existing tables first. The SQL file is an initial schema, not a migration system.
 
-## Checks
+## Paystack
 
-Run `python test_database.py` to check database connectivity. Application routes can also be inspected with `flask --app app routes`. Payment initialization and callbacks require a reachable Paystack API and valid credentials for an end-to-end check.
+Put a Paystack test secret key in `PAYSTACK_SECRET_KEY` for local testing. The application initializes payments through Paystack and verifies the returned transaction server-side. For a deployed or live environment, use the public HTTPS application URL for the callback flow and set `SESSION_COOKIE_SECURE=true`.
+
+## Windows notes
+
+- Do not copy or activate the repository's Unix-style `venv`; create a fresh `.venv` on Windows.
+- MariaDB must be running as a Windows service and listening on port 3306, unless the application code is extended to support another port.
+- Upload directories are created automatically when an admin uploads a book. Keep the database and `static/uploads/` files backed up together.
+- The development server is intended for local use, not production hosting.
