@@ -622,7 +622,7 @@ def place_order():
     cursor.close()
     connection.close()
 
-    return redirect(url_for("checkout"))
+    return redirect(url_for("order_details", order_id=order_id))
 
 
 # Customer orders
