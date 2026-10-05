@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ category[1] }} Ebooks
+{% endblock %}
+
+{% block navigation %}
+
+    <nav class="site-nav">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        {% if session.get("user_id") %}
+
+            <a href="{{ url_for('cart') }}">Cart</a>
+            <a href="{{ url_for('customer_orders') }}">My Orders</a>
+            <a href="{{ url_for('customer_library') }}">My Library</a>
+
+            <form method="POST" action="{{ url_for('logout') }}" class="nav-logout-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="nav-link-button">Logout</button>
+            </form>
+
+        {% else %}
+
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+
+        {% endif %}
+
+    </nav>
+
+{% endblock %}
+
+{% block content %}
+
+    <section class="ebooks">
+
+        <h2>{{ category[1] }}</h2>
+
+        {% if books %}
+
+            <div class="ebook-grid category-book-grid">
+
+                {% for book in books %}
+
+                    <article class="ebook-card">
+
+                        <div class="ebook-cover" aria-hidden="true">
+                            <span class="cover-kicker">DIGITAL EDITION</span>
+                            <strong>{{ book[1] }}</strong>
+                            <span class="cover-author">{{ book[2] }}</span>
+                            <span class="cover-ornament"></span>
+                        </div>
+
+                        <div class="ebook-card-content">
+
+                            <h3>{{ book[1] }}</h3>
+
+                            <p>
+                                <strong>Author:</strong>
+                                {{ book[2] }}
+                            </p>
+
+                            <p>
+                                <strong>Category:</strong>
+                                {{ category[1] }}
+                            </p>
+
+                            <p class="ebook-price">₦{{ book[3] }}</p>
+
+                            <a
+                                href="{{ url_for('book_details', book_id=book[0]) }}"
+                                class="button"
+                            >
+                                View Details
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p>No ebooks are available in this category yet.</p>
+
+        {% endif %}
+
+        <a href="{{ url_for('home') }}" class="back-link">
+            Back to Ebooks
+        </a>
+
+    </section>
+
+{% endblock %}

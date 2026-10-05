@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 
 import psycopg
 import os
+import re
 import requests
 import uuid
 import posixpath
@@ -97,7 +98,7 @@ def home():
     # Create a cursor and get all categories
     cursor = connection.cursor()
 
-    cursor.execute("SELECT name FROM categories")
+    cursor.execute("SELECT id, name FROM categories")
     categories = cursor.fetchall()
 
     # Get books with their category names
@@ -124,6 +125,38 @@ def home():
         categories=categories,
         books=books
     )
+
+
+# Category page
+@app.route("/category/<int:category_id>")
+def category_page(category_id):
+
+    # Connect to the database
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # Find the selected category
+    cursor.execute("SELECT id, name FROM categories WHERE id = %s", (category_id,))
+    category = cursor.fetchone()
+
+    if category is None:
+        cursor.close()
+        connection.close()
+        return error_response("Category not found.", 404)
+
+    # Get books in this category
+    cursor.execute("""
+        SELECT id, title, author, price
+        FROM books
+        WHERE category_id = %s
+    """, (category_id,))
+    books = cursor.fetchall()
+
+    # Close the database connection
+    cursor.close()
+    connection.close()
+
+    return render_template("category.html", category=category, books=books)
 
 
 # Book details page
@@ -177,11 +210,33 @@ def register():
 
         # Get data from the form
         name = request.form.get("name", "").strip()
-        email = request.form.get("email", "").strip()
+        email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+        verify_password = request.form.get("verify_password", "")
 
-        if not name or not email or not password:
-            return error_response("Name, email, and password are required.", 400)
+        if not name or not email or not password or not verify_password:
+            return render_template(
+                "customer/register.html",
+                error="Name, email, password, and verify password are required.",
+                name=name,
+                email=email,
+            ), 400
+
+        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+            return render_template(
+                "customer/register.html",
+                error="Enter a valid email address.",
+                name=name,
+                email=email,
+            ), 400
+
+        if password != verify_password:
+            return render_template(
+                "customer/register.html",
+                error="Passwords do not match.",
+                name=name,
+                email=email,
+            ), 400
 
         # Hash the password
         hashed_password = generate_password_hash(password)
@@ -205,11 +260,13 @@ def register():
             connection.rollback()
 
             # Check if the email already exists
-            if error.args[0] == 1062:
-                return error_response(
-                    "An account with this email already exists. Please use another email.",
-                    409,
-                )
+            if error.sqlstate == "23505":
+                return render_template(
+                    "customer/register.html",
+                    error="An account with this email already exists. Please use another email.",
+                    name=name,
+                    email=email,
+                ), 409
 
             raise
 
@@ -811,7 +868,6 @@ def pay_order(order_id):
 
     # Check if Paystack accepted the request
     if not isinstance(result, dict) or not result.get("status"):
-        print("Paystack response:", result)
         cursor.close()
         connection.close()
         return error_response("Unable to initialize payment.", 502)

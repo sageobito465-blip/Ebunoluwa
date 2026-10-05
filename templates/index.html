@@ -69,9 +69,12 @@
 
             {% for category in categories %}
 
-                <span class="category-item">
-                    {{ category[0] }}
-                </span>
+                <a
+                    href="{{ url_for('category_page', category_id=category[0]) }}"
+                    class="category-item"
+                >
+                    {{ category[1] }}
+                </a>
 
             {% endfor %}
 
